@@ -1,0 +1,68 @@
+/** Align with endchess-backend GET /positions */
+export type PositionMoveApiDto = {
+  san: string;
+  uci: string;
+  games: number;
+  whiteWins: number;
+  draws: number;
+  blackWins: number;
+  avgElo: number | null;
+};
+
+export type PositionApiDto = {
+  positionKey: string;
+  fen: string;
+  totalGames: number;
+  moves: PositionMoveApiDto[];
+  sampleGameIds: string[];
+};
+
+/** Align with endchess-backend GET /positions/games */
+export type PositionGameRowApiDto = {
+  gameId: string;
+  url: string;
+  white: string;
+  black: string;
+  whiteElo: number;
+  blackElo: number;
+  result: string;
+  date?: string;
+  event?: string;
+  nextSan: string;
+  nextUci: string;
+  avgElo: number;
+};
+
+export type PositionGamesApiDto = {
+  positionKey: string;
+  fen: string;
+  minElo: number;
+  maxElo: number;
+  uci?: string;
+  topOnly: boolean;
+  games: PositionGameRowApiDto[];
+};
+
+export type FetchPositionGamesParams = {
+  fen: string;
+  minElo: number;
+  maxElo: number;
+  uci?: string;
+  topOnly: boolean;
+  limit?: number;
+};
+
+/** Align with endchess-backend GET /positions/games/:gameId */
+export type ExplorerGameReplayApiDto = {
+  gameId: string;
+  url: string;
+  white: string;
+  black: string;
+  whiteElo: number;
+  blackElo: number;
+  result: string;
+  date?: string;
+  event?: string;
+  movesUci: string[];
+  movesSan: string[];
+};
