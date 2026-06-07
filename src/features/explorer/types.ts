@@ -52,6 +52,38 @@ export type FetchPositionGamesParams = {
   limit?: number;
 };
 
+/** Align with endchess-backend GET /positions/variations */
+export type PositionVariationLineApiDto = {
+  key: string;
+  label: string;
+  moves: PositionMoveApiDto[];
+  uciPath: string[];
+  games: number;
+  scorePercent: number | null;
+  lastPlayedYear: number | null;
+  avgElo: number | null;
+};
+
+export type PositionVariationsApiDto = {
+  positionKey: string;
+  fen: string;
+  mode: 'variations' | 'popularity';
+  depth: number;
+  lineCount: number;
+  minElo: number;
+  maxElo: number;
+  lines: PositionVariationLineApiDto[];
+};
+
+export type FetchPositionVariationsParams = {
+  fen: string;
+  mode: 'variations' | 'popularity';
+  minElo: number;
+  maxElo: number;
+  depth?: number;
+  lineCount?: number;
+};
+
 /** Align with endchess-backend GET /positions/games/:gameId */
 export type ExplorerGameReplayApiDto = {
   gameId: string;

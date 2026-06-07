@@ -1,11 +1,15 @@
 import type { ReactNode } from 'react';
 import type {
   FetchPositionGamesParams,
+  FetchPositionVariationsParams,
   PositionApiDto,
   PositionGameRowApiDto,
   PositionGamesApiDto,
   PositionMoveApiDto,
+  PositionVariationLineApiDto,
+  PositionVariationsApiDto,
 } from '../types';
+import type { VariationsTab } from '../variationLines';
 
 export type ReferenceLayoutRenderProps = {
   theme: 'light' | 'dark';
@@ -53,6 +57,13 @@ export type GamesPanelRenderProps = {
 
 export type VariationsStripRenderProps = {
   theme: 'light' | 'dark';
+  tab: VariationsTab;
+  onTabChange: (tab: VariationsTab) => void;
+  lines: PositionVariationLineApiDto[];
+  loading: boolean;
+  selectedLineKey?: string;
+  forwardSans: string[];
+  onLineSelect: (line: PositionVariationLineApiDto) => void;
 };
 
 export type PositionReferenceExplorerCoreProps = {
@@ -62,6 +73,9 @@ export type PositionReferenceExplorerCoreProps = {
   fetchPositionGames: (
     params: FetchPositionGamesParams,
   ) => Promise<PositionGamesApiDto>;
+  fetchPositionVariations: (
+    params: FetchPositionVariationsParams,
+  ) => Promise<PositionVariationsApiDto | null>;
   theme?: 'light' | 'dark';
   boardWidth?: number;
   defaultMinElo?: number;

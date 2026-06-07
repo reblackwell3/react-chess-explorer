@@ -1,7 +1,9 @@
 import type {
   FetchPositionGamesParams,
+  FetchPositionVariationsParams,
   PositionApiDto,
   PositionGamesApiDto,
+  PositionVariationsApiDto,
 } from './types';
 import { EXPLORER_START_FEN } from './constants';
 
@@ -82,6 +84,49 @@ export async function mockFetchPosition(
 ): Promise<PositionApiDto | null> {
   void fen;
   return mockPosition;
+}
+
+function mockVariationLines(
+  params: FetchPositionVariationsParams,
+  position: PositionApiDto,
+): PositionVariationsApiDto {
+  const lineCount = params.lineCount ?? 8;
+  const starters = [...position.moves]
+    .sort((a, b) => b.games - a.games)
+    .slice(0, lineCount);
+
+  const lines = starters.map((move) => ({
+    key: move.uci,
+    label:
+      params.mode === 'popularity'
+        ? `1.${move.san}`
+        : `1.${move.san} 1...e5`,
+    moves: [move],
+    uciPath: [move.uci],
+    games: move.games,
+    scorePercent: 54,
+    lastPlayedYear: 2024,
+    avgElo: move.avgElo,
+  }));
+
+  return {
+    positionKey: position.positionKey,
+    fen: params.fen,
+    mode: params.mode,
+    depth: params.mode === 'popularity' ? 1 : (params.depth ?? 4),
+    lineCount,
+    minElo: params.minElo,
+    maxElo: params.maxElo,
+    lines,
+  };
+}
+
+export async function mockFetchPositionVariations(
+  params: FetchPositionVariationsParams,
+): Promise<PositionVariationsApiDto | null> {
+  const position = await mockFetchPosition(params.fen);
+  if (!position) return null;
+  return mockVariationLines(params, position);
 }
 
 export async function mockFetchPositionGames(

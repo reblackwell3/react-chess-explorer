@@ -19,6 +19,7 @@ export type {
   VariationsStripRenderProps,
   BoardNavRenderProps,
 } from './core/renderProps';
+export type { VariationsTab } from './variationLines';
 export {
   DEFAULT_REFERENCE_LAYOUT,
   DefaultReferenceLayout,
@@ -43,13 +44,21 @@ export type {
   PositionGamesApiDto,
   PositionGameRowApiDto,
   PositionMoveApiDto,
+  PositionVariationLineApiDto,
+  PositionVariationsApiDto,
   FetchPositionGamesParams,
+  FetchPositionVariationsParams,
   ExplorerGameReplayApiDto,
 } from './types';
-export { mockFetchPosition, mockFetchPositionGames } from './mocks';
+export {
+  mockFetchPosition,
+  mockFetchPositionGames,
+  mockFetchPositionVariations,
+} from './mocks';
 export {
   fenAfterUci,
   normalizeFen,
   whiteScorePercent,
 } from './positionUtils';
+export { isVariationLineActive } from './variationLines';
 export { findPlyIndexForFen, fenAtPly } from './gameReplayUtils';

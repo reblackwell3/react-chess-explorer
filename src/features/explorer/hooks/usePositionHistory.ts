@@ -51,8 +51,26 @@ export function usePositionHistory(initialFen: string) {
     return entry;
   }, []);
 
+  const pushEntries = useCallback(
+    (entries: { fen: string; lastSan: string }[]) => {
+      if (entries.length === 0) return;
+      setHistory((prev) => {
+        const trimmed = prev.slice(0, historyIndex + 1);
+        const next = [...trimmed, ...entries];
+        setHistoryIndex(next.length - 1);
+        return next;
+      });
+    },
+    [historyIndex],
+  );
+
   const lineSans = history
     .slice(1, historyIndex + 1)
+    .map((entry) => entry.lastSan)
+    .filter((san): san is string => Boolean(san));
+
+  const forwardSans = history
+    .slice(historyIndex + 1)
     .map((entry) => entry.lastSan)
     .filter((san): san is string => Boolean(san));
 
@@ -60,7 +78,9 @@ export function usePositionHistory(initialFen: string) {
     canGoBack,
     canGoForward,
     lineSans,
+    forwardSans,
     pushEntry,
+    pushEntries,
     goBack,
     goForward,
     resetHistory,

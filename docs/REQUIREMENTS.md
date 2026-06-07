@@ -82,12 +82,12 @@ Lichess link still available via `url` for external replay.
 ```ts
 fetchPosition: (fen) => api.get('/positions', { params: { fen } }).then(r => r.data),
 fetchPositionGames: (p) => api.get('/positions/games', { params: p }).then(r => r.data),
+fetchPositionVariations: (p) => api.get('/positions/variations', { params: p }).then(r => r.data),
 ```
 
 ## Out of scope (v1)
 
 - Move stats filtered by rating slider (aggregates only; games list is filtered)
-- Full variation tree / “hot” lines
 - Community position names
 - Opening repertoires
 

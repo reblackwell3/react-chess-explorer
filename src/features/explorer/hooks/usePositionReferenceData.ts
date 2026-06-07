@@ -7,6 +7,8 @@ import type {
   PositionGamesApiDto,
   PositionMoveApiDto,
 } from '../types';
+import type { PositionVariationLineApiDto } from '../types';
+import type { VariationsTab } from '../variationLines';
 import { usePositionHistory } from './usePositionHistory';
 
 export type UsePositionReferenceDataOptions = {
@@ -41,12 +43,19 @@ export function usePositionReferenceData({
   const [topOnly, setTopOnly] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [variationsTab, setVariationsTab] =
+    useState<VariationsTab>('variations');
+  const [selectedVariationKey, setSelectedVariationKey] = useState<
+    string | undefined
+  >();
 
   const {
     canGoBack,
     canGoForward,
     lineSans,
+    forwardSans,
     pushEntry,
+    pushEntries,
     goBack,
     goForward,
     resetHistory,
@@ -121,9 +130,31 @@ export function usePositionReferenceData({
       const nextFen = fenAfterUci(fen, move.uci);
       if (!nextFen) return;
       pushEntry(nextFen, move.san);
+      setSelectedVariationKey(undefined);
       applyNavigation(nextFen, true);
     },
     [fen, pushEntry, applyNavigation],
+  );
+
+  const handleLineSelect = useCallback(
+    (line: PositionVariationLineApiDto) => {
+      let currentFen = fen;
+      const entries: { fen: string; lastSan: string }[] = [];
+
+      for (let i = 0; i < line.uciPath.length; i += 1) {
+        const nextFen = fenAfterUci(currentFen, line.uciPath[i]);
+        if (!nextFen) return;
+        entries.push({ fen: nextFen, lastSan: line.moves[i].san });
+        currentFen = nextFen;
+      }
+
+      if (entries.length === 0) return;
+
+      pushEntries(entries);
+      setSelectedVariationKey(line.key);
+      applyNavigation(entries[entries.length - 1].fen, true);
+    },
+    [fen, pushEntries, applyNavigation],
   );
 
   const handlePieceDrop = useCallback(
@@ -135,6 +166,7 @@ export function usePositionReferenceData({
       const result = applyBoardMove(fen, sourceSquare, targetSquare, piece);
       if (!result) return false;
       pushEntry(result.fen, result.san);
+      setSelectedVariationKey(undefined);
       applyNavigation(result.fen, true);
       return true;
     },
@@ -174,11 +206,16 @@ export function usePositionReferenceData({
     lineLabel,
     canGoBack,
     canGoForward,
+    variationsTab,
+    forwardSans,
+    selectedVariationKey,
     setMinElo,
     setMaxElo,
     setTopOnly,
+    setVariationsTab,
     setGamesMoveFilterUci,
     handleMoveSelect,
+    handleLineSelect,
     handlePieceDrop,
     handleBack,
     handleForward,

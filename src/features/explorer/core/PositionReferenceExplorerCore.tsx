@@ -12,12 +12,14 @@ import {
 } from '../defaults/defaultRenderers';
 import { DEFAULT_REFERENCE_LAYOUT } from '../referenceLayout';
 import { usePositionReferenceData } from '../hooks/usePositionReferenceData';
+import { useVariationLines } from '../hooks/useVariationLines';
 import type { PositionReferenceExplorerCoreProps } from './renderProps';
 export const PositionReferenceExplorerCore = ({
   fen: fenProp,
   onFenChange,
   fetchPosition,
   fetchPositionGames,
+  fetchPositionVariations,
   theme = 'dark',
   boardWidth = DEFAULT_REFERENCE_LAYOUT.boardWidth,
   defaultMinElo = 2200,
@@ -44,10 +46,15 @@ export const PositionReferenceExplorerCore = ({
     lineLabel,
     canGoBack,
     canGoForward,
+    variationsTab,
+    forwardSans,
+    selectedVariationKey,
     setMinElo,
     setMaxElo,
     setTopOnly,
+    setVariationsTab,
     handleMoveSelect,
+    handleLineSelect,
     handlePieceDrop,
     handleBack,
     handleForward,
@@ -59,6 +66,16 @@ export const PositionReferenceExplorerCore = ({
     defaultMinElo,
     defaultMaxElo,
   });
+
+  const { lines: variationLines, loading: variationLinesLoading } =
+    useVariationLines({
+      fen,
+      tab: variationsTab,
+      minElo,
+      maxElo,
+      fetchPositionVariations,
+      enabled: Boolean(position),
+    });
 
   const outerStyle: CSSProperties = {
     width: '100%',
@@ -98,7 +115,16 @@ export const PositionReferenceExplorerCore = ({
         moves: position?.moves ?? [],
         onMoveSelect: handleMoveSelect,
       })}
-      variationsStrip={renderVariationsStrip({ theme })}
+      variationsStrip={renderVariationsStrip({
+        theme,
+        tab: variationsTab,
+        onTabChange: setVariationsTab,
+        lines: variationLines,
+        loading: variationLinesLoading,
+        selectedLineKey: selectedVariationKey,
+        forwardSans,
+        onLineSelect: handleLineSelect,
+      })}
       gamesPanel={renderGamesPanel({
         games: games?.games ?? [],
         lineLabel,
