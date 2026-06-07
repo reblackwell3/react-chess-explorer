@@ -1,5 +1,5 @@
-import { PositionReferenceExplorerCore } from './core/PositionReferenceExplorerCore';
-import type { PositionReferenceExplorerCoreProps } from './core/renderProps';
+import { PositionReferenceExplorerCore } from "./core/PositionReferenceExplorerCore";
+import type { PositionReferenceExplorerCoreProps } from "./core/renderProps";
 
 export type PositionReferenceExplorerProps = PositionReferenceExplorerCoreProps;
 

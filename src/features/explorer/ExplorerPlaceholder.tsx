@@ -1,8 +1,8 @@
-import { HighlightChessboard, ThemeProvider } from 'react-chess-core';
-import { EXPLORER_START_FEN } from './constants';
+import { HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { EXPLORER_START_FEN } from "./constants";
 
 export type ExplorerPlaceholderProps = {
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   /** Pixel width of the board. */
   boardWidth?: number;
 };
@@ -12,11 +12,11 @@ export type ExplorerPlaceholderProps = {
  * Replace with game replay once requirements are defined.
  */
 export const ExplorerPlaceholder = ({
-  theme = 'dark',
+  theme = "dark",
   boardWidth = 400,
 }: ExplorerPlaceholderProps) => (
   <ThemeProvider theme={theme}>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
       <HighlightChessboard
         boardWidth={boardWidth}
         position={EXPLORER_START_FEN}
@@ -27,7 +27,7 @@ export const ExplorerPlaceholder = ({
       <p
         style={{
           margin: 0,
-          fontFamily: 'system-ui, sans-serif',
+          fontFamily: "system-ui, sans-serif",
           fontSize: 14,
           opacity: 0.8,
         }}

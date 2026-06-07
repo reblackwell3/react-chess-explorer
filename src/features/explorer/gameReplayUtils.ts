@@ -1,6 +1,6 @@
-import { Chess, type Square } from 'chess.js';
-import { EXPLORER_START_FEN } from './constants';
-import { normalizeFen } from './positionUtils';
+import { Chess, type Square } from "chess.js";
+import { EXPLORER_START_FEN } from "./constants";
+import { normalizeFen } from "./positionUtils";
 
 export function fenAtPly(movesUci: string[], ply: number): string {
   const chess = new Chess(EXPLORER_START_FEN);
@@ -58,5 +58,5 @@ export function uciFromDrop(
         (!move.promotion || move.promotion === pieceType),
     );
   if (!legal) return null;
-  return `${legal.from}${legal.to}${legal.promotion ?? ''}`;
+  return `${legal.from}${legal.to}${legal.promotion ?? ""}`;
 }

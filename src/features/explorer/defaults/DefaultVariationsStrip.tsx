@@ -1,18 +1,21 @@
-import type { CSSProperties } from 'react';
-import type { VariationsStripRenderProps } from '../core/renderProps';
-import { variationsStripStyle, variationsTabStyle } from '../components/explorerStyles';
-import { isVariationLineActive } from '../variationLines';
+import type { CSSProperties } from "react";
+import type { VariationsStripRenderProps } from "../core/renderProps";
+import {
+  variationsStripStyle,
+  variationsTabStyle,
+} from "../components/explorerStyles";
+import { isVariationLineActive } from "../variationLines";
 
 const tabButtonStyle = (active: boolean): CSSProperties => ({
   ...variationsTabStyle,
   fontWeight: active ? 600 : 400,
   opacity: active ? 1 : 0.55,
-  cursor: 'pointer',
-  border: 'none',
-  background: 'transparent',
+  cursor: "pointer",
+  border: "none",
+  background: "transparent",
   padding: 0,
-  color: 'inherit',
-  font: 'inherit',
+  color: "inherit",
+  font: "inherit",
 });
 
 export const DefaultVariationsStrip = ({
@@ -26,28 +29,33 @@ export const DefaultVariationsStrip = ({
   onLineSelect,
 }: VariationsStripRenderProps) => (
   <div
-    style={{ ...variationsStripStyle, flexDirection: 'column', alignItems: 'stretch', gap: 6 }}
+    style={{
+      ...variationsStripStyle,
+      flexDirection: "column",
+      alignItems: "stretch",
+      gap: 6,
+    }}
     data-theme={theme}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
       <button
         type="button"
-        style={tabButtonStyle(tab === 'variations')}
-        onClick={() => onTabChange('variations')}
+        style={tabButtonStyle(tab === "variations")}
+        onClick={() => onTabChange("variations")}
       >
         Variations
       </button>
       <button
         type="button"
-        style={tabButtonStyle(tab === 'popularity')}
-        onClick={() => onTabChange('popularity')}
+        style={tabButtonStyle(tab === "popularity")}
+        onClick={() => onTabChange("popularity")}
       >
         Popularity
       </button>
       <button
         type="button"
-        style={tabButtonStyle(tab === 'endgames')}
-        onClick={() => onTabChange('endgames')}
+        style={tabButtonStyle(tab === "endgames")}
+        onClick={() => onTabChange("endgames")}
       >
         Endgames
       </button>
@@ -57,10 +65,10 @@ export const DefaultVariationsStrip = ({
       style={{
         minWidth: 0,
         maxHeight: 132,
-        overflow: 'auto',
+        overflow: "auto",
       }}
     >
-      {tab === 'endgames' ? (
+      {tab === "endgames" ? (
         <span style={{ fontSize: 11, opacity: 0.55 }}>Coming soon</span>
       ) : loading ? (
         <span style={{ fontSize: 11, opacity: 0.55 }}>Loading…</span>
@@ -80,29 +88,29 @@ export const DefaultVariationsStrip = ({
               type="button"
               onClick={() => onLineSelect(line)}
               style={{
-                display: 'flex',
-                width: '100%',
+                display: "flex",
+                width: "100%",
                 gap: 12,
-                alignItems: 'baseline',
-                border: 'none',
-                background: 'transparent',
-                padding: '2px 0',
-                cursor: 'pointer',
-                textAlign: 'left',
-                color: active ? '#2e7d32' : 'inherit',
-                font: 'inherit',
+                alignItems: "baseline",
+                border: "none",
+                background: "transparent",
+                padding: "2px 0",
+                cursor: "pointer",
+                textAlign: "left",
+                color: active ? "#2e7d32" : "inherit",
+                font: "inherit",
                 fontSize: 12,
               }}
             >
               <span style={{ flex: 1, minWidth: 0 }}>{line.label}</span>
               <span>N = {line.games.toLocaleString()}</span>
-              <span>{line.scorePercent ?? '—'}%</span>
+              <span>{line.scorePercent ?? "—"}%</span>
               <span>
                 {line.lastPlayedYear
                   ? `Last played ${line.lastPlayedYear}`
-                  : 'Last played —'}
+                  : "Last played —"}
               </span>
-              <span>{line.avgElo ?? '—'}</span>
+              <span>{line.avgElo ?? "—"}</span>
             </button>
           );
         })

@@ -1,7 +1,7 @@
-import type { CSSProperties } from 'react';
-import { ChessboardDnDProvider } from 'react-chessboard';
-import { HighlightChessboard, ThemeProvider } from 'react-chess-core';
-import { DefaultReferencePanel } from '../defaults/DefaultReferencePanel';
+import type { CSSProperties } from "react";
+import { ChessboardDnDProvider } from "react-chessboard";
+import { HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { DefaultReferencePanel } from "../defaults/DefaultReferencePanel";
 import {
   defaultRenderBoardNav,
   defaultRenderGamesPanel,
@@ -9,18 +9,20 @@ import {
   defaultRenderMoveStats,
   defaultRenderStatus,
   defaultRenderVariationsStrip,
-} from '../defaults/defaultRenderers';
-import { DEFAULT_REFERENCE_LAYOUT } from '../referenceLayout';
-import { usePositionReferenceData } from '../hooks/usePositionReferenceData';
-import { useVariationLines } from '../hooks/useVariationLines';
-import type { PositionReferenceExplorerCoreProps } from './renderProps';
+} from "../defaults/defaultRenderers";
+import { DEFAULT_REFERENCE_LAYOUT } from "../referenceLayout";
+import { usePositionReferenceData } from "../hooks/usePositionReferenceData";
+import { useVariationLines } from "../hooks/useVariationLines";
+import type { PositionReferenceExplorerCoreProps } from "./renderProps";
 export const PositionReferenceExplorerCore = ({
   fen: fenProp,
   onFenChange,
+  initialLineSans,
+  onLineSansChange,
   fetchPosition,
   fetchPositionGames,
   fetchPositionVariations,
-  theme = 'dark',
+  theme = "dark",
   boardWidth = DEFAULT_REFERENCE_LAYOUT.boardWidth,
   defaultMinElo = 2200,
   defaultMaxElo = 2800,
@@ -34,8 +36,19 @@ export const PositionReferenceExplorerCore = ({
   renderBoardNav = defaultRenderBoardNav,
   onGameSelect,
 }: PositionReferenceExplorerCoreProps) => {
+  const referenceData = usePositionReferenceData({
+    fenProp,
+    onFenChange,
+    initialLineSans,
+    onLineSansChange,
+    fetchPosition,
+    fetchPositionGames,
+    defaultMinElo,
+    defaultMaxElo,
+  });
   const {
     fen,
+    boardFen,
     position,
     games,
     minElo,
@@ -58,14 +71,7 @@ export const PositionReferenceExplorerCore = ({
     handlePieceDrop,
     handleBack,
     handleForward,
-  } = usePositionReferenceData({
-    fenProp,
-    onFenChange,
-    fetchPosition,
-    fetchPositionGames,
-    defaultMinElo,
-    defaultMaxElo,
-  });
+  } = referenceData;
 
   const { lines: variationLines, loading: variationLinesLoading } =
     useVariationLines({
@@ -78,11 +84,11 @@ export const PositionReferenceExplorerCore = ({
     });
 
   const outerStyle: CSSProperties = {
-    width: '100%',
-    height: fillHeight ? '100%' : 'auto',
+    width: "100%",
+    height: fillHeight ? "100%" : "auto",
     minHeight: layoutMinHeight ?? DEFAULT_REFERENCE_LAYOUT.minHeight,
-    overflow: 'hidden',
-    boxSizing: 'border-box',
+    overflow: "hidden",
+    boxSizing: "border-box",
   };
 
   const board = (
@@ -90,7 +96,7 @@ export const PositionReferenceExplorerCore = ({
       <ChessboardDnDProvider>
         <HighlightChessboard
           boardWidth={boardWidth}
-          position={fen}
+          position={boardFen}
           checkSquare=""
           hintSquare={null}
           incorrectMoveSquare={null}

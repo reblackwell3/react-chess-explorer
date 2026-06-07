@@ -28,6 +28,8 @@ export type PositionGameRowApiDto = {
   result: string;
   date?: string;
   event?: string;
+  timeControl?: string;
+  timeClass?: string;
   nextSan: string;
   nextUci: string;
   avgElo: number;
@@ -67,7 +69,7 @@ export type PositionVariationLineApiDto = {
 export type PositionVariationsApiDto = {
   positionKey: string;
   fen: string;
-  mode: 'variations' | 'popularity';
+  mode: "variations" | "popularity";
   depth: number;
   lineCount: number;
   minElo: number;
@@ -77,7 +79,7 @@ export type PositionVariationsApiDto = {
 
 export type FetchPositionVariationsParams = {
   fen: string;
-  mode: 'variations' | 'popularity';
+  mode: "variations" | "popularity";
   minElo: number;
   maxElo: number;
   depth?: number;
@@ -95,6 +97,8 @@ export type ExplorerGameReplayApiDto = {
   result: string;
   date?: string;
   event?: string;
+  timeControl?: string;
+  timeClass?: string;
   movesUci: string[];
   movesSan: string[];
 };

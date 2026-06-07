@@ -1,4 +1,4 @@
-import { boardNavButtonStyle, boardNavStyle } from './explorerStyles';
+import { boardNavButtonStyle, boardNavStyle } from "./explorerStyles";
 
 export type BoardNavRenderProps = {
   canGoBack: boolean;

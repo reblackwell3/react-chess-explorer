@@ -1,4 +1,4 @@
-import { Chess, type Square } from 'chess.js';
+import { Chess, type Square } from "chess.js";
 
 /** Match endchess-backend / mass-games-import (first four FEN fields). */
 export function normalizeFen(fen: string): string {
@@ -40,8 +40,34 @@ export function applyBoardMove(
   });
   if (!played) return null;
 
-  const uci = `${played.from}${played.to}${played.promotion ?? ''}`;
+  const uci = `${played.from}${played.to}${played.promotion ?? ""}`;
   return { fen: chess.fen(), uci, san: played.san };
+}
+
+export type LineSansEntry = {
+  fen: string;
+  lastSan: string;
+};
+
+/** Play a SAN sequence from a start FEN; returns null if any move is illegal. */
+export function applyLineSans(
+  startFen: string,
+  sans: string[],
+): { fen: string; entries: LineSansEntry[] } | null {
+  const chess = new Chess(startFen);
+  const entries: LineSansEntry[] = [];
+
+  for (const san of sans) {
+    try {
+      const move = chess.move(san);
+      if (!move) return null;
+      entries.push({ fen: chess.fen(), lastSan: move.san });
+    } catch {
+      return null;
+    }
+  }
+
+  return { fen: chess.fen(), entries };
 }
 
 /** Apply a UCI move to a FEN; returns null if illegal. */

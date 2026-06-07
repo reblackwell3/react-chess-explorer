@@ -1,13 +1,13 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 import {
   panelStyle,
   referencePanelStyle,
   referenceTabBarStyle,
   referenceTabLabelStyle,
-} from '../components/explorerStyles';
+} from "../components/explorerStyles";
 
 export type DefaultReferencePanelProps = {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   status: ReactNode;
   moveStats: ReactNode;
   variationsStrip: ReactNode;
@@ -24,10 +24,12 @@ export const DefaultReferencePanel = ({
 }: DefaultReferencePanelProps) => (
   <div style={{ ...referencePanelStyle, ...panelStyle }} data-theme={theme}>
     <div style={referenceTabBarStyle}>
-      <span style={{ ...referenceTabLabelStyle, fontWeight: 600 }}>Reference</span>
+      <span style={{ ...referenceTabLabelStyle, fontWeight: 600 }}>
+        Reference
+      </span>
     </div>
     {status}
-    <div style={{ flex: '0 0 auto', minHeight: 0 }}>{moveStats}</div>
+    <div style={{ flex: "0 0 auto", minHeight: 0 }}>{moveStats}</div>
     {variationsStrip}
     {gamesPanel}
   </div>

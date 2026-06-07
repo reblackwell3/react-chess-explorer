@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState } from "react";
 
 export type PositionHistoryEntry = {
   fen: string;
@@ -85,4 +85,4 @@ export function usePositionHistory(initialFen: string) {
     goForward,
     resetHistory,
   };
-};
+}

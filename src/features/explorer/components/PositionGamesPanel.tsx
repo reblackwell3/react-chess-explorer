@@ -1,13 +1,13 @@
-import type { CSSProperties } from 'react';
-import type { PositionGameRowApiDto } from '../types';
-import { EloRangeFilter } from './EloRangeFilter';
-import { GamesTable } from './GamesTable';
+import type { CSSProperties } from "react";
+import type { PositionGameRowApiDto } from "../types";
+import { EloRangeFilter } from "./EloRangeFilter";
+import { GamesTable } from "./GamesTable";
 import {
   gamesHeaderStyle,
   gamesScrollStyle,
   gamesSectionStyle,
   gamesToolbarStyle,
-} from './explorerStyles';
+} from "./explorerStyles";
 
 export type PositionGamesPanelProps = {
   games: PositionGameRowApiDto[];
@@ -68,7 +68,7 @@ export const PositionGamesPanel = ({
         onMinEloChange={onMinEloChange}
         onMaxEloChange={onMaxEloChange}
       />
-      <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
         <input
           type="checkbox"
           checked={topOnly}

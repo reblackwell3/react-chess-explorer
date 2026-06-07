@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { ExplorerGameReplayApiDto } from '../types';
-import { fenAtPly, findPlyIndexForFen, uciFromDrop } from '../gameReplayUtils';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import type { ExplorerGameReplayApiDto } from "../types";
+import { fenAtPly, findPlyIndexForFen, uciFromDrop } from "../gameReplayUtils";
 
-export type GameReplayFeedback = 'correct' | 'incorrect' | null;
+export type GameReplayFeedback = "correct" | "incorrect" | null;
 
 export type UseGameReplayTrainingOptions = {
   gameId: string;
@@ -36,7 +36,7 @@ export function useGameReplayTraining({
         if (cancelled) return;
         if (!loaded?.movesUci.length) {
           setGame(null);
-          setError('This game has no move list for replay yet');
+          setError("This game has no move list for replay yet");
           return;
         }
         setGame(loaded);
@@ -44,7 +44,7 @@ export function useGameReplayTraining({
       } catch (e) {
         if (!cancelled) {
           setError(
-            e instanceof Error ? e.message : 'Failed to load game for replay',
+            e instanceof Error ? e.message : "Failed to load game for replay",
           );
         }
       } finally {
@@ -67,24 +67,20 @@ export function useGameReplayTraining({
   const expectedSan = game?.movesSan[plyIndex];
 
   const handlePieceDrop = useCallback(
-    (
-      sourceSquare: string,
-      targetSquare: string,
-      piece: string,
-    ): boolean => {
+    (sourceSquare: string, targetSquare: string, piece: string): boolean => {
       if (!game || complete || !expectedUci) return false;
 
       const uci = uciFromDrop(fen, sourceSquare, targetSquare, piece);
       if (!uci) return false;
 
       if (uci === expectedUci) {
-        setFeedback('correct');
+        setFeedback("correct");
         setPlyIndex((p) => p + 1);
         setLastExpectedSan(null);
         return true;
       }
 
-      setFeedback('incorrect');
+      setFeedback("incorrect");
       setLastExpectedSan(expectedSan ?? null);
       return false;
     },
@@ -93,7 +89,7 @@ export function useGameReplayTraining({
 
   const revealMove = useCallback(() => {
     if (!game || complete || !expectedSan) return;
-    setFeedback('incorrect');
+    setFeedback("incorrect");
     setLastExpectedSan(expectedSan);
     setPlyIndex((p) => p + 1);
   }, [game, complete, expectedSan]);

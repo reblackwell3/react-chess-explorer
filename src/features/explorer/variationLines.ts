@@ -1,6 +1,6 @@
-import type { PositionVariationLineApiDto } from './types';
+import type { PositionVariationLineApiDto } from "./types";
 
-export type VariationsTab = 'variations' | 'popularity' | 'endgames';
+export type VariationsTab = "variations" | "popularity" | "endgames";
 
 /** @deprecated Use PositionVariationLineApiDto from ./types */
 export type PositionVariationLine = PositionVariationLineApiDto;

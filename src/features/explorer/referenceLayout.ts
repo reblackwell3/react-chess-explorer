@@ -13,8 +13,8 @@ export type ReferenceLayoutConfig = {
 
 export const DEFAULT_REFERENCE_LAYOUT: ReferenceLayoutConfig = {
   boardWidth: 560,
-  boardColumn: 'minmax(420px, 1.45fr)',
-  referenceColumn: 'minmax(380px, 1fr)',
+  boardColumn: "minmax(420px, 1.45fr)",
+  referenceColumn: "minmax(380px, 1fr)",
   columnGap: 0,
-  minHeight: 'calc(100vh - 120px)',
+  minHeight: "calc(100vh - 120px)",
 };

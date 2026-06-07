@@ -1,22 +1,22 @@
-import type { CSSProperties, ReactNode } from 'react';
-import { ChessboardDnDProvider } from 'react-chessboard';
-import { HighlightChessboard, ThemeProvider } from 'react-chess-core';
-import { DEFAULT_REFERENCE_LAYOUT } from './referenceLayout';
-import { useGameReplayTraining } from './hooks/useGameReplayTraining';
-import type { ExplorerGameReplayApiDto } from './types';
+import type { CSSProperties, ReactNode } from "react";
+import { ChessboardDnDProvider } from "react-chessboard";
+import { HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { DEFAULT_REFERENCE_LAYOUT } from "./referenceLayout";
+import { useGameReplayTraining } from "./hooks/useGameReplayTraining";
+import type { ExplorerGameReplayApiDto } from "./types";
 
 export type GameReplayTrainerProps = {
   gameId: string;
   startFen: string;
   fetchGame: (gameId: string) => Promise<ExplorerGameReplayApiDto | null>;
   onExit?: () => void;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   boardWidth?: number;
   renderStatus?: (props: {
     loading: boolean;
     error: string | null;
     complete: boolean;
-    feedback: 'correct' | 'incorrect' | null;
+    feedback: "correct" | "incorrect" | null;
     lastExpectedSan: string | null;
     plyIndex: number;
     totalPlies: number;
@@ -25,18 +25,18 @@ export type GameReplayTrainerProps = {
 };
 
 const defaultPanelStyle: CSSProperties = {
-  fontFamily: 'system-ui, sans-serif',
+  fontFamily: "system-ui, sans-serif",
   fontSize: 13,
   padding: 12,
-  display: 'flex',
-  flexDirection: 'column',
+  display: "flex",
+  flexDirection: "column",
   gap: 8,
 };
 
 const defaultButtonStyle: CSSProperties = {
   fontSize: 13,
-  padding: '6px 12px',
-  cursor: 'pointer',
+  padding: "6px 12px",
+  cursor: "pointer",
 };
 
 export const GameReplayTrainer = ({
@@ -44,7 +44,7 @@ export const GameReplayTrainer = ({
   startFen,
   fetchGame,
   onExit,
-  theme = 'dark',
+  theme = "dark",
   boardWidth = DEFAULT_REFERENCE_LAYOUT.boardWidth,
   renderStatus,
 }: GameReplayTrainerProps) => {
@@ -78,9 +78,9 @@ export const GameReplayTrainer = ({
       <div style={defaultPanelStyle}>
         <div
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
             gap: 8,
           }}
         >
@@ -100,18 +100,18 @@ export const GameReplayTrainer = ({
 
         {status ?? (
           <div style={{ minHeight: 20 }}>
-            {loading && 'Loading game…'}
-            {error && <span style={{ color: '#c62828' }}>{error}</span>}
-            {!loading && !error && complete && 'Game complete.'}
-            {!loading && !error && !complete && feedback === 'correct' && (
-              <span style={{ color: '#2e7d32' }}>Correct!</span>
+            {loading && "Loading game…"}
+            {error && <span style={{ color: "#c62828" }}>{error}</span>}
+            {!loading && !error && complete && "Game complete."}
+            {!loading && !error && !complete && feedback === "correct" && (
+              <span style={{ color: "#2e7d32" }}>Correct!</span>
             )}
             {!loading &&
               !error &&
               !complete &&
-              feedback === 'incorrect' &&
+              feedback === "incorrect" &&
               lastExpectedSan && (
-                <span style={{ color: '#ef6c00' }}>
+                <span style={{ color: "#ef6c00" }}>
                   Expected {lastExpectedSan}
                 </span>
               )}
@@ -136,11 +136,7 @@ export const GameReplayTrainer = ({
         </ChessboardDnDProvider>
 
         {!complete && !loading && !error && (
-          <button
-            type="button"
-            style={defaultButtonStyle}
-            onClick={revealMove}
-          >
+          <button type="button" style={defaultButtonStyle} onClick={revealMove}>
             Show move
           </button>
         )}

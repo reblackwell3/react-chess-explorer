@@ -1,12 +1,12 @@
-import type { PositionMoveApiDto } from '../types';
-import { whiteScorePercent } from '../positionUtils';
+import type { PositionMoveApiDto } from "../types";
+import { whiteScorePercent } from "../positionUtils";
 import {
   moveStatsSectionStyle,
   sectionTitleStyle,
   tableStyle,
   tdStyle,
   thStyle,
-} from './explorerStyles';
+} from "./explorerStyles";
 
 export type MoveStatsTableProps = {
   moves: PositionMoveApiDto[];
@@ -26,8 +26,8 @@ export const MoveStatsTable = ({
         <tr>
           <th style={thStyle}>Move</th>
           <th style={thStyle}>Games</th>
-          <th style={{ ...thStyle, textAlign: 'right' }}>Score %</th>
-          <th style={{ ...thStyle, textAlign: 'right' }}>Avg</th>
+          <th style={{ ...thStyle, textAlign: "right" }}>Score %</th>
+          <th style={{ ...thStyle, textAlign: "right" }}>Avg</th>
         </tr>
       </thead>
       <tbody>
@@ -44,17 +44,17 @@ export const MoveStatsTable = ({
               key={move.uci}
               onClick={() => onMoveSelect(move)}
               style={{
-                cursor: 'pointer',
-                background: selected ? 'rgba(100,149,237,0.25)' : undefined,
+                cursor: "pointer",
+                background: selected ? "rgba(100,149,237,0.25)" : undefined,
               }}
             >
               <td style={tdStyle}>{move.san}</td>
               <td style={tdStyle}>{move.games.toLocaleString()}</td>
-              <td style={{ ...tdStyle, textAlign: 'right' }}>
-                {score !== null ? `${score}` : '—'}
+              <td style={{ ...tdStyle, textAlign: "right" }}>
+                {score !== null ? `${score}` : "—"}
               </td>
-              <td style={{ ...tdStyle, textAlign: 'right' }}>
-                {move.avgElo ?? '—'}
+              <td style={{ ...tdStyle, textAlign: "right" }}>
+                {move.avgElo ?? "—"}
               </td>
             </tr>
           );

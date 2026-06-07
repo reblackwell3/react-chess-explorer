@@ -1,15 +1,13 @@
-export { EXPLORER_START_FEN } from './constants';
+export { EXPLORER_START_FEN } from "./constants";
 export {
   ExplorerPlaceholder,
   type ExplorerPlaceholderProps,
-} from './ExplorerPlaceholder';
+} from "./ExplorerPlaceholder";
 export {
   PositionReferenceExplorer,
   type PositionReferenceExplorerProps,
-} from './PositionReferenceExplorer';
-export {
-  PositionReferenceExplorerCore,
-} from './core/PositionReferenceExplorerCore';
+} from "./PositionReferenceExplorer";
+export { PositionReferenceExplorerCore } from "./core/PositionReferenceExplorerCore";
 export type {
   PositionReferenceExplorerCoreProps,
   ReferenceLayoutRenderProps,
@@ -18,8 +16,8 @@ export type {
   GamesPanelRenderProps,
   VariationsStripRenderProps,
   BoardNavRenderProps,
-} from './core/renderProps';
-export type { VariationsTab } from './variationLines';
+} from "./core/renderProps";
+export type { VariationsTab } from "./variationLines";
 export {
   DEFAULT_REFERENCE_LAYOUT,
   DefaultReferenceLayout,
@@ -32,13 +30,13 @@ export {
   defaultRenderVariationsStrip,
   defaultRenderBoardNav,
   DefaultBoardNav,
-} from './defaults';
-export type { ReferenceLayoutConfig } from './referenceLayout';
+} from "./defaults";
+export type { ReferenceLayoutConfig } from "./referenceLayout";
 export {
   GameReplayTrainer,
   type GameReplayTrainerProps,
-} from './GameReplayTrainer';
-export { useGameReplayTraining } from './hooks/useGameReplayTraining';
+} from "./GameReplayTrainer";
+export { useGameReplayTraining } from "./hooks/useGameReplayTraining";
 export type {
   PositionApiDto,
   PositionGamesApiDto,
@@ -49,16 +47,17 @@ export type {
   FetchPositionGamesParams,
   FetchPositionVariationsParams,
   ExplorerGameReplayApiDto,
-} from './types';
+} from "./types";
 export {
   mockFetchPosition,
   mockFetchPositionGames,
   mockFetchPositionVariations,
-} from './mocks';
+} from "./mocks";
 export {
+  applyLineSans,
   fenAfterUci,
   normalizeFen,
   whiteScorePercent,
-} from './positionUtils';
-export { isVariationLineActive } from './variationLines';
-export { findPlyIndexForFen, fenAtPly } from './gameReplayUtils';
+} from "./positionUtils";
+export { isVariationLineActive } from "./variationLines";
+export { findPlyIndexForFen, fenAtPly } from "./gameReplayUtils";

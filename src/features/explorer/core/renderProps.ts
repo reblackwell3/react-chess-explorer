@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 import type {
   FetchPositionGamesParams,
   FetchPositionVariationsParams,
@@ -8,11 +8,11 @@ import type {
   PositionMoveApiDto,
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
-} from '../types';
-import type { VariationsTab } from '../variationLines';
+} from "../types";
+import type { VariationsTab } from "../variationLines";
 
 export type ReferenceLayoutRenderProps = {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   board: ReactNode;
   referencePanel: ReactNode;
 };
@@ -56,7 +56,7 @@ export type GamesPanelRenderProps = {
 };
 
 export type VariationsStripRenderProps = {
-  theme: 'light' | 'dark';
+  theme: "light" | "dark";
   tab: VariationsTab;
   onTabChange: (tab: VariationsTab) => void;
   lines: PositionVariationLineApiDto[];
@@ -69,6 +69,10 @@ export type VariationsStripRenderProps = {
 export type PositionReferenceExplorerCoreProps = {
   fen?: string;
   onFenChange?: (fen: string) => void;
+  /** Seed move history on mount (e.g. from URL). Applied from {@link EXPLORER_START_FEN}. */
+  initialLineSans?: string[];
+  /** Fired after mount when the played SAN line changes (back/forward/new move). */
+  onLineSansChange?: (lineSans: string[]) => void;
   fetchPosition: (fen: string) => Promise<PositionApiDto | null>;
   fetchPositionGames: (
     params: FetchPositionGamesParams,
@@ -76,7 +80,7 @@ export type PositionReferenceExplorerCoreProps = {
   fetchPositionVariations: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
-  theme?: 'light' | 'dark';
+  theme?: "light" | "dark";
   boardWidth?: number;
   defaultMinElo?: number;
   defaultMaxElo?: number;

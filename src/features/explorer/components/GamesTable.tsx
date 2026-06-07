@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react';
-import type { PositionGameRowApiDto } from '../types';
-import { tableStyle, tdStyle, thStyle } from './explorerStyles';
+import type { CSSProperties } from "react";
+import type { PositionGameRowApiDto } from "../types";
+import { tableStyle, tdStyle, thStyle } from "./explorerStyles";
 
 export type GamesTableProps = {
   games: PositionGameRowApiDto[];
@@ -8,18 +8,12 @@ export type GamesTableProps = {
 };
 
 const linkStyle: CSSProperties = {
-  color: 'inherit',
-  textDecoration: 'underline',
+  color: "inherit",
+  textDecoration: "underline",
   textUnderlineOffset: 2,
 };
 
-const LichessGameLink = ({
-  url,
-  name,
-}: {
-  url: string;
-  name: string;
-}) => (
+const LichessGameLink = ({ url, name }: { url: string; name: string }) => (
   <a href={url} target="_blank" rel="noopener noreferrer" style={linkStyle}>
     {name}
   </a>
@@ -42,7 +36,7 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
         <tr>
           <td
             colSpan={onGameSelect ? 6 : 5}
-            style={{ ...tdStyle, opacity: 0.7, fontStyle: 'italic' }}
+            style={{ ...tdStyle, opacity: 0.7, fontStyle: "italic" }}
           >
             No games match this position and filter. Widen the Elo range or turn
             off Top games.

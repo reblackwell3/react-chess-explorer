@@ -1,8 +1,8 @@
-import type { ReferenceLayoutRenderProps } from '../core/renderProps';
+import type { ReferenceLayoutRenderProps } from "../core/renderProps";
 import {
   boardColumnStyle,
   referenceShellStyle,
-} from '../components/explorerStyles';
+} from "../components/explorerStyles";
 
 export const DefaultReferenceLayout = ({
   board,

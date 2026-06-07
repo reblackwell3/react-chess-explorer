@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import type {
   FetchPositionVariationsParams,
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
-} from '../types';
-import type { VariationsTab } from '../variationLines';
+} from "../types";
+import type { VariationsTab } from "../variationLines";
 
 export type UseVariationLinesOptions = {
   fen: string;
@@ -33,7 +33,7 @@ export function useVariationLines({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!enabled || tab === 'endgames') {
+    if (!enabled || tab === "endgames") {
       setLines([]);
       setLoading(false);
       return;

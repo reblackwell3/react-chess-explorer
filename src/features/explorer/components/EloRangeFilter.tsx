@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties } from "react";
 
 export type EloRangeFilterProps = {
   minElo: number;
@@ -11,15 +11,15 @@ export type EloRangeFilterProps = {
 
 const inputStyle: CSSProperties = {
   width: 64,
-  padding: '2px 6px',
+  padding: "2px 6px",
   fontSize: 12,
 };
 
 const rowStyle: CSSProperties = {
-  display: 'flex',
-  flexWrap: 'wrap',
+  display: "flex",
+  flexWrap: "wrap",
   gap: 6,
-  alignItems: 'center',
+  alignItems: "center",
 };
 
 export const EloRangeFilter = ({

@@ -1,4 +1,4 @@
-import { statusInlineStyle } from './explorerStyles';
+import { statusInlineStyle } from "./explorerStyles";
 
 export type ExplorerStatusBannerProps = {
   error: string | null;
@@ -14,7 +14,7 @@ export const ExplorerStatusBanner = ({
   return (
     <>
       {error && (
-        <p style={{ ...statusInlineStyle, color: '#e57373' }} role="alert">
+        <p style={{ ...statusInlineStyle, color: "#e57373" }} role="alert">
           {error}
         </p>
       )}

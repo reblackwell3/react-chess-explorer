@@ -1,14 +1,14 @@
-import { defaultRenderBoardNav } from '../components/DefaultBoardNav';
-import { ExplorerStatusBanner } from '../components/ExplorerStatusBanner';
-import { MoveStatsTable } from '../components/MoveStatsTable';
-import { PositionGamesPanel } from '../components/PositionGamesPanel';
+import { defaultRenderBoardNav } from "../components/DefaultBoardNav";
+import { ExplorerStatusBanner } from "../components/ExplorerStatusBanner";
+import { MoveStatsTable } from "../components/MoveStatsTable";
+import { PositionGamesPanel } from "../components/PositionGamesPanel";
 import type {
   ExplorerStatusRenderProps,
   GamesPanelRenderProps,
   MoveStatsRenderProps,
-} from '../core/renderProps';
-import { defaultRenderLayout } from './DefaultReferenceLayout';
-import { defaultRenderVariationsStrip } from './DefaultVariationsStrip';
+} from "../core/renderProps";
+import { defaultRenderLayout } from "./DefaultReferenceLayout";
+import { defaultRenderVariationsStrip } from "./DefaultVariationsStrip";
 
 export {
   defaultRenderLayout,
