@@ -57,7 +57,6 @@ type PositionBucket = {
   fen: string;
   totalGames: number;
   moves: Map<string, MoveBucket>;
-  sampleGameIds: string[];
   gameRows: PositionGameRowApiDto[];
 };
 
@@ -88,7 +87,10 @@ function buildGame(index: number): BuiltGame {
 
   const third = WHITE_THIRD_MOVES[index % WHITE_THIRD_MOVES.length];
   const fourth =
-    third.blacks[(index + Math.floor(index / WHITE_THIRD_MOVES.length)) % third.blacks.length];
+    third.blacks[
+      (index + Math.floor(index / WHITE_THIRD_MOVES.length)) %
+        third.blacks.length
+    ];
 
   const lineSans = [...NC6_OPENING_SANS, third.san];
   const chess = new Chess();
@@ -154,7 +156,6 @@ function buildPositionBuckets(games: BuiltGame[]): Map<string, PositionBucket> {
           fen: fenBefore,
           totalGames: 0,
           moves: new Map(),
-          sampleGameIds: [],
           gameRows: [],
         };
         buckets.set(fenBefore, bucket);
@@ -178,10 +179,6 @@ function buildPositionBuckets(games: BuiltGame[]): Map<string, PositionBucket> {
           blackWins: outcome.blackWin,
           eloSum: game.avgElo,
         });
-      }
-
-      if (bucket.sampleGameIds.length < 5 && !bucket.sampleGameIds.includes(game.gameId)) {
-        bucket.sampleGameIds.push(game.gameId);
       }
 
       const occurrence = game.occurrences.get(fenBefore);
@@ -209,7 +206,9 @@ function buildPositionBuckets(games: BuiltGame[]): Map<string, PositionBucket> {
   return buckets;
 }
 
-const nc6TabiyaResult = applyLineSans(EXPLORER_START_FEN, [...NC6_OPENING_SANS]);
+const nc6TabiyaResult = applyLineSans(EXPLORER_START_FEN, [
+  ...NC6_OPENING_SANS,
+]);
 if (!nc6TabiyaResult) {
   throw new Error("Failed to build Nc6 tabiya from opening SANs");
 }
@@ -244,7 +243,6 @@ export function nc6PositionForFen(fen: string): PositionApiDto | null {
     fen: bucket.fen,
     totalGames: bucket.totalGames,
     moves,
-    sampleGameIds: bucket.sampleGameIds,
   };
 }
 
@@ -274,6 +272,8 @@ export function nc6GamesForPosition(
   });
 }
 
-export function nc6ScorePercentForMove(move: PositionMoveApiDto): number | null {
+export function nc6ScorePercentForMove(
+  move: PositionMoveApiDto,
+): number | null {
   return whiteScorePercent(move.whiteWins, move.draws, move.blackWins);
 }

@@ -14,7 +14,6 @@ export type PositionApiDto = {
   fen: string;
   totalGames: number;
   moves: PositionMoveApiDto[];
-  sampleGameIds: string[];
 };
 
 /** Align with endchess-backend GET /positions/games */

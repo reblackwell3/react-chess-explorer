@@ -51,10 +51,7 @@ export async function nc6FetchPositionVariations(
 
   const lines = starters.map((move) => ({
     key: move.uci,
-    label:
-      params.mode === "popularity"
-        ? move.san
-        : `${move.san} …`,
+    label: params.mode === "popularity" ? move.san : `${move.san} …`,
     moves: [move],
     uciPath: [move.uci],
     games: move.games,

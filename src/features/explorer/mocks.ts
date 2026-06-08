@@ -40,7 +40,6 @@ const mockPosition: PositionApiDto = {
       avgElo: 2435,
     },
   ],
-  sampleGameIds: ["abc123", "def456"],
 };
 
 const mockGames: PositionGamesApiDto = {
