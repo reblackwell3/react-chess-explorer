@@ -54,6 +54,7 @@ export const PositionReferenceExplorerCore = ({
     minElo,
     maxElo,
     topOnly,
+    sources,
     loading,
     error,
     lineLabel,
@@ -65,6 +66,7 @@ export const PositionReferenceExplorerCore = ({
     setMinElo,
     setMaxElo,
     setTopOnly,
+    setSources,
     setVariationsTab,
     handleMoveSelect,
     handleLineSelect,
@@ -139,9 +141,11 @@ export const PositionReferenceExplorerCore = ({
         defaultMinElo,
         defaultMaxElo,
         topOnly,
+        sources,
         onMinEloChange: setMinElo,
         onMaxEloChange: setMaxElo,
         onTopOnlyChange: setTopOnly,
+        onSourcesChange: setSources,
         onGameSelect,
       })}
     />

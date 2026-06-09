@@ -61,6 +61,7 @@ const mockGames: PositionGamesApiDto = {
       nextSan: "e4",
       nextUci: "e2e4",
       avgElo: 2843,
+      source: "lichess",
     },
     {
       gameId: "def456",
@@ -74,6 +75,7 @@ const mockGames: PositionGamesApiDto = {
       nextSan: "d4",
       nextUci: "d2d4",
       avgElo: 2778,
+      source: "twic",
     },
   ],
 };
@@ -129,9 +131,13 @@ export async function mockFetchPositionVariations(
 export async function mockFetchPositionGames(
   params: FetchPositionGamesParams,
 ): Promise<PositionGamesApiDto> {
-  const filtered = params.uci
+  let filtered = params.uci
     ? mockGames.games.filter((g) => g.nextUci === params.uci)
     : mockGames.games;
+
+  if (params.sources?.length) {
+    filtered = filtered.filter((game) => params.sources!.includes(game.source));
+  }
 
   return {
     ...mockGames,

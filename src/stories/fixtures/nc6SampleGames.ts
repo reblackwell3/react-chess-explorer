@@ -131,6 +131,7 @@ function buildGame(index: number): BuiltGame {
     event: "Storybook Nc6 Sample",
     timeControl,
     timeClass,
+    source: index % 5 === 0 ? "twic" : "lichess",
     movesUci,
     movesSan,
     avgElo,
@@ -198,6 +199,7 @@ function buildPositionBuckets(games: BuiltGame[]): Map<string, PositionBucket> {
           nextSan: occurrence.nextSan,
           nextUci: occurrence.nextUci,
           avgElo: game.avgElo,
+          source: game.source,
         });
       }
     }
@@ -253,6 +255,7 @@ export function nc6GamesForPosition(
     maxElo: number;
     uci?: string;
     topOnly: boolean;
+    sources?: ("lichess" | "twic")[];
   },
 ): PositionGameRowApiDto[] {
   const bucket = nc6PositionBuckets.get(normalizeFen(fen));
@@ -266,6 +269,9 @@ export function nc6GamesForPosition(
       return false;
     }
     if (options.topOnly && game.avgElo < 2500) {
+      return false;
+    }
+    if (options.sources?.length && !options.sources.includes(game.source)) {
       return false;
     }
     return true;

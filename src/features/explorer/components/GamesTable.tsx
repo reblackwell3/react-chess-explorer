@@ -28,6 +28,7 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
         <th style={thStyle}>Black</th>
         <th style={thStyle}>Elo</th>
         <th style={thStyle}>Result</th>
+        <th style={thStyle}>Source</th>
         {onGameSelect && <th style={thStyle} />}
       </tr>
     </thead>
@@ -35,7 +36,7 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
       {games.length === 0 ? (
         <tr>
           <td
-            colSpan={onGameSelect ? 6 : 5}
+            colSpan={onGameSelect ? 7 : 6}
             style={{ ...tdStyle, opacity: 0.7, fontStyle: "italic" }}
           >
             No games match this position and filter. Widen the Elo range or turn
@@ -54,6 +55,9 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
             </td>
             <td style={tdStyle}>{g.blackElo}</td>
             <td style={tdStyle}>{g.result}</td>
+            <td style={tdStyle}>
+              {g.source === "twic" ? "Master" : "Lichess"}
+            </td>
             {onGameSelect && (
               <td style={tdStyle}>
                 <button type="button" onClick={() => onGameSelect(g)}>

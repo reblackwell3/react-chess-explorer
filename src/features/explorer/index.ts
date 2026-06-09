@@ -38,6 +38,7 @@ export {
 } from "./GameReplayTrainer";
 export { useGameReplayTraining } from "./hooks/useGameReplayTraining";
 export type {
+  GameSource,
   PositionApiDto,
   PositionGamesApiDto,
   PositionGameRowApiDto,
@@ -48,6 +49,7 @@ export type {
   FetchPositionVariationsParams,
   ExplorerGameReplayApiDto,
 } from "./types";
+export { ALL_GAME_SOURCES } from "./types";
 export {
   mockFetchPosition,
   mockFetchPositionGames,

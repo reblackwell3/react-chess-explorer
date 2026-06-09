@@ -25,6 +25,7 @@ export async function nc6FetchPositionGames(
     maxElo: params.maxElo,
     uci: params.uci,
     topOnly: params.topOnly,
+    sources: params.sources,
   });
 
   return {

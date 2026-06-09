@@ -1,3 +1,7 @@
+export type GameSource = "lichess" | "twic";
+
+export const ALL_GAME_SOURCES: GameSource[] = ["lichess", "twic"];
+
 /** Align with endchess-backend GET /positions */
 export type PositionMoveApiDto = {
   san: string;
@@ -32,6 +36,7 @@ export type PositionGameRowApiDto = {
   nextSan: string;
   nextUci: string;
   avgElo: number;
+  source: GameSource;
 };
 
 export type PositionGamesApiDto = {
@@ -51,6 +56,7 @@ export type FetchPositionGamesParams = {
   uci?: string;
   topOnly: boolean;
   limit?: number;
+  sources?: GameSource[];
 };
 
 /** Align with endchess-backend GET /positions/variations */
@@ -98,6 +104,7 @@ export type ExplorerGameReplayApiDto = {
   event?: string;
   timeControl?: string;
   timeClass?: string;
+  source: GameSource;
   movesUci: string[];
   movesSan: string[];
 };

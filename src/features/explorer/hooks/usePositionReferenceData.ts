@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { EXPLORER_START_FEN, VARIATION_LINE_STEP_MS } from "../constants";
 import { applyBoardMove, applyLineSans, fenAfterUci } from "../positionUtils";
-import type {
-  FetchPositionGamesParams,
-  PositionApiDto,
-  PositionGamesApiDto,
-  PositionMoveApiDto,
+import {
+  ALL_GAME_SOURCES,
+  type FetchPositionGamesParams,
+  type GameSource,
+  type PositionApiDto,
+  type PositionGamesApiDto,
+  type PositionMoveApiDto,
 } from "../types";
 import type { PositionVariationLineApiDto } from "../types";
 import type { VariationsTab } from "../variationLines";
@@ -47,6 +49,7 @@ export function usePositionReferenceData({
   const [minElo, setMinElo] = useState(defaultMinElo);
   const [maxElo, setMaxElo] = useState(defaultMaxElo);
   const [topOnly, setTopOnly] = useState(false);
+  const [sources, setSources] = useState<GameSource[]>([...ALL_GAME_SOURCES]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [variationsTab, setVariationsTab] =
@@ -173,6 +176,8 @@ export function usePositionReferenceData({
             maxElo,
             uci: gamesMoveFilterUci,
             topOnly,
+            sources:
+              sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
           }),
         ]);
         if (cancelled) return;
@@ -201,6 +206,7 @@ export function usePositionReferenceData({
     maxElo,
     gamesMoveFilterUci,
     topOnly,
+    sources,
     fetchPosition,
     fetchPositionGames,
   ]);
@@ -327,6 +333,7 @@ export function usePositionReferenceData({
     minElo,
     maxElo,
     topOnly,
+    sources,
     loading,
     error,
     lineLabel,
@@ -338,6 +345,7 @@ export function usePositionReferenceData({
     setMinElo,
     setMaxElo,
     setTopOnly,
+    setSources,
     setVariationsTab,
     setGamesMoveFilterUci,
     handleMoveSelect,
