@@ -44,6 +44,7 @@ export type LineHeaderRenderProps = {
 export type GamesPanelRenderProps = {
   games: PositionGameRowApiDto[];
   lineLabel: string;
+  loading?: boolean;
   minElo: number;
   maxElo: number;
   defaultMinElo: number;

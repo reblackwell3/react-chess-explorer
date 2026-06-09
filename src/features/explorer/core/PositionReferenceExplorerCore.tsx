@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ChessboardDnDProvider } from "react-chessboard";
 import { HighlightChessboard, ThemeProvider } from "react-chess-core";
 import { DefaultReferencePanel } from "../defaults/DefaultReferencePanel";
@@ -49,13 +50,15 @@ export const PositionReferenceExplorerCore = ({
   const {
     fen,
     boardFen,
-    position,
     games,
     minElo,
     maxElo,
     topOnly,
     sources,
     loading,
+    gamesLoading,
+    positionReady,
+    displayMoves,
     error,
     lineLabel,
     canGoBack,
@@ -75,6 +78,44 @@ export const PositionReferenceExplorerCore = ({
     handleForward,
   } = referenceData;
 
+  /** Defer variations so move stats stay instant; load in background when idle. */
+  const [variationsEnabled, setVariationsEnabled] = useState(false);
+
+  useEffect(() => {
+    setVariationsEnabled(false);
+    if (!positionReady || loading) return;
+
+    let idleHandle: number | undefined;
+    let deferTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const enableVariations = () => setVariationsEnabled(true);
+
+    if (typeof window.requestIdleCallback === "function") {
+      idleHandle = window.requestIdleCallback(enableVariations, {
+        timeout: 2000,
+      });
+    } else {
+      deferTimer = setTimeout(enableVariations, 1000);
+    }
+
+    return () => {
+      if (idleHandle !== undefined) {
+        window.cancelIdleCallback(idleHandle);
+      }
+      if (deferTimer !== undefined) {
+        clearTimeout(deferTimer);
+      }
+    };
+  }, [fen, positionReady, loading]);
+
+  const handleVariationsTabChange = useCallback(
+    (tab: typeof variationsTab) => {
+      setVariationsEnabled(true);
+      setVariationsTab(tab);
+    },
+    [setVariationsTab],
+  );
+
   const { lines: variationLines, loading: variationLinesLoading } =
     useVariationLines({
       fen,
@@ -82,7 +123,7 @@ export const PositionReferenceExplorerCore = ({
       minElo,
       maxElo,
       fetchPositionVariations,
-      enabled: Boolean(position),
+      enabled: variationsEnabled && positionReady,
     });
 
   const outerStyle: CSSProperties = {
@@ -118,23 +159,27 @@ export const PositionReferenceExplorerCore = ({
   const referencePanel = (
     <DefaultReferencePanel
       theme={theme}
-      status={renderStatus({ error, loading })}
+      status={renderStatus({
+        error,
+        loading: loading && !positionReady,
+      })}
       moveStats={renderMoveStats({
-        moves: position?.moves ?? [],
+        moves: displayMoves,
         onMoveSelect: handleMoveSelect,
       })}
       variationsStrip={renderVariationsStrip({
         theme,
         tab: variationsTab,
-        onTabChange: setVariationsTab,
+        onTabChange: handleVariationsTabChange,
         lines: variationLines,
-        loading: variationLinesLoading,
+        loading: !variationsEnabled || variationLinesLoading,
         selectedLineKey: selectedVariationKey,
         forwardSans,
         onLineSelect: handleLineSelect,
       })}
       gamesPanel={renderGamesPanel({
         games: games?.games ?? [],
+        loading: gamesLoading,
         lineLabel,
         minElo,
         maxElo,

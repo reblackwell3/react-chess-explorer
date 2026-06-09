@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { applyLineSans } from "../positionUtils";
 
 export type PositionHistoryEntry = {
   fen: string;
@@ -6,11 +7,35 @@ export type PositionHistoryEntry = {
   lastSan?: string;
 };
 
-export function usePositionHistory(initialFen: string) {
-  const [history, setHistory] = useState<PositionHistoryEntry[]>([
-    { fen: initialFen },
-  ]);
-  const [historyIndex, setHistoryIndex] = useState(0);
+export function initialHistoryState(
+  initialFen: string,
+  initialLineSans?: string[],
+): { history: PositionHistoryEntry[]; historyIndex: number } {
+  if (!initialLineSans?.length) {
+    return { history: [{ fen: initialFen }], historyIndex: 0 };
+  }
+
+  const result = applyLineSans(initialFen, initialLineSans);
+  if (!result) {
+    return { history: [{ fen: initialFen }], historyIndex: 0 };
+  }
+
+  return {
+    history: [{ fen: initialFen }, ...result.entries],
+    historyIndex: result.entries.length,
+  };
+}
+
+export function usePositionHistory(
+  initialFen: string,
+  initialLineSans?: string[],
+) {
+  const [history, setHistory] = useState<PositionHistoryEntry[]>(
+    () => initialHistoryState(initialFen, initialLineSans).history,
+  );
+  const [historyIndex, setHistoryIndex] = useState(
+    () => initialHistoryState(initialFen, initialLineSans).historyIndex,
+  );
 
   const canGoBack = historyIndex > 0;
   const canGoForward = historyIndex < history.length - 1;

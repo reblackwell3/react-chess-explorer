@@ -11,7 +11,10 @@ import {
 } from "../types";
 import type { PositionVariationLineApiDto } from "../types";
 import type { VariationsTab } from "../variationLines";
-import { usePositionHistory } from "./usePositionHistory";
+import {
+  initialHistoryState,
+  usePositionHistory,
+} from "./usePositionHistory";
 
 export type UsePositionReferenceDataOptions = {
   fenProp?: string;
@@ -37,9 +40,15 @@ export function usePositionReferenceData({
   defaultMaxElo,
 }: UsePositionReferenceDataOptions) {
   const initialFen = fenProp ?? EXPLORER_START_FEN;
-  const [fen, setFen] = useState(initialFen);
+  const bootstrappedRef = useRef(
+    initialHistoryState(initialFen, initialLineSans),
+  );
+  const bootstrappedFen =
+    bootstrappedRef.current.history[bootstrappedRef.current.historyIndex]
+      ?.fen ?? initialFen;
+  const [fen, setFen] = useState(bootstrappedFen);
   /** Board display FEN; may lead {@link fen} while a variation line is animating. */
-  const [boardFen, setBoardFen] = useState(initialFen);
+  const [boardFen, setBoardFen] = useState(bootstrappedFen);
   const [position, setPosition] = useState<PositionApiDto | null>(null);
   const [games, setGames] = useState<PositionGamesApiDto | null>(null);
   /** Filter games to those that played this UCI from the current FEN (optional). */
@@ -51,6 +60,11 @@ export function usePositionReferenceData({
   const [topOnly, setTopOnly] = useState(false);
   const [sources, setSources] = useState<GameSource[]>([...ALL_GAME_SOURCES]);
   const [loading, setLoading] = useState(false);
+  const [gamesLoading, setGamesLoading] = useState(false);
+  /** FEN that {@link position} was loaded for (may lag {@link fen} while fetching). */
+  const [loadedPositionFen, setLoadedPositionFen] = useState<string | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [variationsTab, setVariationsTab] =
     useState<VariationsTab>("variations");
@@ -62,7 +76,10 @@ export function usePositionReferenceData({
     typeof setTimeout
   > | null>(null);
   const isAnimatingVariationRef = useRef(false);
-  const readyForLineSyncRef = useRef(false);
+  const readyForLineSyncRef = useRef(
+    bootstrappedRef.current.historyIndex > 0 ||
+      (initialLineSans?.length ?? 0) === 0,
+  );
 
   const cancelVariationAnimation = useCallback(() => {
     if (variationAnimationTimerRef.current !== null) {
@@ -82,7 +99,7 @@ export function usePositionReferenceData({
     goBack,
     goForward,
     resetHistory,
-  } = usePositionHistory(initialFen);
+  } = usePositionHistory(initialFen, initialLineSans);
 
   const applyNavigation = useCallback(
     (nextFen: string, clearMoveFilter = true) => {
@@ -96,15 +113,22 @@ export function usePositionReferenceData({
     [onFenChange],
   );
 
+  const fenRef = useRef(fen);
+  fenRef.current = fen;
+  const positionsByFenRef = useRef(new Map<string, PositionApiDto>());
+
   const initialLineKey = useMemo(
     () => initialLineSans?.join("|") ?? "",
     [initialLineSans],
   );
-  const lastAppliedLineKeyRef = useRef<string | undefined>(undefined);
+  const lastAppliedLineKeyRef = useRef(initialLineKey);
 
   useEffect(() => () => cancelVariationAnimation(), [cancelVariationAnimation]);
 
+  // Apply URL line changes only when the external line key changes — not when the
+  // user clicks moves (internal lineSans updates must not re-sync from stale props).
   useEffect(() => {
+    if (initialLineSans === undefined && onLineSansChange === undefined) return;
     if (lastAppliedLineKeyRef.current === initialLineKey) return;
 
     const currentLineKey = lineSans.join("|");
@@ -131,7 +155,6 @@ export function usePositionReferenceData({
   }, [
     initialLineKey,
     initialLineSans,
-    lineSans,
     cancelVariationAnimation,
     resetHistory,
     pushEntries,
@@ -150,27 +173,77 @@ export function usePositionReferenceData({
   }, [lineSans, initialLineSans]);
 
   useEffect(() => {
+    if (!onLineSansChange) return;
     if (!readyForLineSyncRef.current) return;
-    onLineSansChange?.(lineSans);
+    onLineSansChange(lineSans);
   }, [lineSans, onLineSansChange]);
 
   useEffect(() => {
-    if (fenProp === undefined || fenProp === fen) return;
+    if (fenProp === undefined) return;
+    if (fenProp === fenRef.current) return;
     cancelVariationAnimation();
     resetHistory(fenProp);
     applyNavigation(fenProp, true);
-  }, [fenProp, fen, resetHistory, applyNavigation, cancelVariationAnimation]);
+  }, [fenProp, cancelVariationAnimation, resetHistory, applyNavigation]);
 
   useEffect(() => {
     let cancelled = false;
+    const requestedFen = fen;
     setLoading(true);
     setError(null);
 
     (async () => {
       try {
-        const [pos, gameList] = await Promise.all([
-          fetchPosition(fen),
-          fetchPositionGames({
+        const pos = await fetchPosition(requestedFen);
+        if (cancelled || requestedFen !== fen) return;
+        if (pos) {
+          positionsByFenRef.current.set(requestedFen, pos);
+        }
+        setPosition(pos);
+        setLoadedPositionFen(requestedFen);
+        if (!pos) {
+          setError("No explorer data for this position yet");
+        }
+      } catch (e) {
+        if (cancelled || requestedFen !== fen) return;
+        setPosition(null);
+        setLoadedPositionFen(null);
+        setError(
+          e instanceof Error ? e.message : "Failed to load explorer data",
+        );
+      } finally {
+        if (!cancelled && requestedFen === fen) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fen, fetchPosition]);
+
+  const positionReady = loadedPositionFen === fen && position != null;
+  const cachedPosition = positionsByFenRef.current.get(fen);
+  const displayPosition =
+    cachedPosition ??
+    (positionReady ? position : null);
+  const displayMoves = displayPosition?.moves ?? [];
+
+  useEffect(() => {
+    if (!positionReady) return;
+
+    let cancelled = false;
+    let idleHandle: number | undefined;
+    let deferTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const loadGames = () => {
+      if (cancelled) return;
+      setGamesLoading(true);
+
+      void (async () => {
+        try {
+          const gameList = await fetchPositionGames({
             fen,
             minElo,
             maxElo,
@@ -178,36 +251,48 @@ export function usePositionReferenceData({
             topOnly,
             sources:
               sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
-          }),
-        ]);
-        if (cancelled) return;
-        setPosition(pos);
-        setGames(gameList);
-        if (!pos) {
-          setError("No explorer data for this position yet");
+          });
+          if (cancelled) return;
+          setGames(gameList);
+        } catch {
+          if (!cancelled) {
+            setGames(null);
+          }
+        } finally {
+          if (!cancelled) setGamesLoading(false);
         }
-      } catch (e) {
-        if (!cancelled) {
-          setError(
-            e instanceof Error ? e.message : "Failed to load explorer data",
-          );
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
+      })();
+    };
+
+    const scheduleGames = () => {
+      if (typeof window.requestIdleCallback === "function") {
+        idleHandle = window.requestIdleCallback(() => loadGames(), {
+          timeout: 1500,
+        });
+      } else {
+        deferTimer = setTimeout(loadGames, 750);
       }
-    })();
+    };
+
+    scheduleGames();
 
     return () => {
       cancelled = true;
+      if (idleHandle !== undefined) {
+        window.cancelIdleCallback(idleHandle);
+      }
+      if (deferTimer !== undefined) {
+        clearTimeout(deferTimer);
+      }
     };
   }, [
     fen,
+    positionReady,
     minElo,
     maxElo,
     gamesMoveFilterUci,
     topOnly,
     sources,
-    fetchPosition,
     fetchPositionGames,
   ]);
 
@@ -335,6 +420,9 @@ export function usePositionReferenceData({
     topOnly,
     sources,
     loading,
+    gamesLoading,
+    positionReady,
+    displayMoves,
     error,
     lineLabel,
     canGoBack,
