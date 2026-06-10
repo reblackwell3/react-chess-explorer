@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type {
   FetchPositionGamesParams,
+  FetchPositionParams,
   FetchPositionVariationsParams,
   GameSource,
   PositionApiDto,
@@ -18,11 +19,15 @@ export type ReferenceLayoutRenderProps = {
   referencePanel: ReactNode;
 };
 
+export type BoardOrientation = "white" | "black";
+
 export type BoardNavRenderProps = {
   canGoBack: boolean;
   canGoForward: boolean;
   onBack: () => void;
   onForward: () => void;
+  boardOrientation: BoardOrientation;
+  onFlipBoard: () => void;
 };
 
 export type ExplorerStatusRenderProps = {
@@ -77,7 +82,7 @@ export type PositionReferenceExplorerCoreProps = {
   initialLineSans?: string[];
   /** Fired after mount when the played SAN line changes (back/forward/new move). */
   onLineSansChange?: (lineSans: string[]) => void;
-  fetchPosition: (fen: string) => Promise<PositionApiDto | null>;
+  fetchPosition: (params: FetchPositionParams) => Promise<PositionApiDto | null>;
   fetchPositionGames: (
     params: FetchPositionGamesParams,
   ) => Promise<PositionGamesApiDto>;
@@ -86,6 +91,12 @@ export type PositionReferenceExplorerCoreProps = {
   ) => Promise<PositionVariationsApiDto | null>;
   theme?: "light" | "dark";
   boardWidth?: number;
+  /** Controlled board orientation. When omitted, orientation is managed internally. */
+  boardOrientation?: BoardOrientation;
+  /** Initial orientation when uncontrolled. Defaults to white. */
+  defaultBoardOrientation?: BoardOrientation;
+  /** Fired when the user flips the board (controlled or uncontrolled). */
+  onBoardOrientationChange?: (orientation: BoardOrientation) => void;
   defaultMinElo?: number;
   defaultMaxElo?: number;
   /** When true, shell uses full viewport height (no extra content below the grid). */
@@ -99,4 +110,9 @@ export type PositionReferenceExplorerCoreProps = {
   renderBoardNav?: (props: BoardNavRenderProps) => ReactNode;
   /** When set, games panel can launch per-game replay training. */
   onGameSelect?: (game: PositionGameRowApiDto) => void;
+  /**
+   * Register ArrowLeft/ArrowRight/Home/End shortcuts while the explorer is mounted.
+   * Default true.
+   */
+  keyboardNav?: boolean;
 };

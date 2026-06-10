@@ -69,6 +69,20 @@ export function usePositionHistory(
     return entry;
   }, [history, historyIndex]);
 
+  const goFirst = useCallback((): PositionHistoryEntry | null => {
+    if (historyIndex <= 0) return null;
+    const entry = history[0];
+    setHistoryIndex(0);
+    return entry;
+  }, [history, historyIndex]);
+
+  const goLast = useCallback((): PositionHistoryEntry | null => {
+    if (historyIndex >= history.length - 1) return null;
+    const entry = history[history.length - 1];
+    setHistoryIndex(history.length - 1);
+    return entry;
+  }, [history, historyIndex]);
+
   const resetHistory = useCallback((fen: string): PositionHistoryEntry => {
     const entry = { fen };
     setHistory([entry]);
@@ -99,15 +113,29 @@ export function usePositionHistory(
     .map((entry) => entry.lastSan)
     .filter((san): san is string => Boolean(san));
 
+  const currentFen = history[historyIndex]?.fen ?? initialFen;
+
+  const replaceLineEntries = useCallback(
+    (startFen: string, entries: { fen: string; lastSan: string }[]) => {
+      setHistory([{ fen: startFen }, ...entries]);
+      setHistoryIndex(entries.length);
+    },
+    [],
+  );
+
   return {
     canGoBack,
     canGoForward,
     lineSans,
     forwardSans,
+    currentFen,
     pushEntry,
     pushEntries,
+    replaceLineEntries,
     goBack,
     goForward,
+    goFirst,
+    goLast,
     resetHistory,
   };
 }

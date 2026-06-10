@@ -45,6 +45,7 @@ export type {
   PositionMoveApiDto,
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
+  FetchPositionParams,
   FetchPositionGamesParams,
   FetchPositionVariationsParams,
   ExplorerGameReplayApiDto,

@@ -49,6 +49,13 @@ export type PositionGamesApiDto = {
   games: PositionGameRowApiDto[];
 };
 
+export type FetchPositionParams = {
+  fen: string;
+  minElo: number;
+  maxElo: number;
+  sources?: GameSource[];
+};
+
 export type FetchPositionGamesParams = {
   fen: string;
   minElo: number;

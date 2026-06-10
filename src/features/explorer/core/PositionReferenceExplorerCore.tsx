@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChessboardDnDProvider } from "react-chessboard";
-import { HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { HighlightChessboard, ThemeProvider, usePositionKeyboardNav } from "react-chess-core";
 import { DefaultReferencePanel } from "../defaults/DefaultReferencePanel";
 import {
   defaultRenderBoardNav,
@@ -25,8 +25,11 @@ export const PositionReferenceExplorerCore = ({
   fetchPositionVariations,
   theme = "dark",
   boardWidth = DEFAULT_REFERENCE_LAYOUT.boardWidth,
-  defaultMinElo = 2200,
-  defaultMaxElo = 2800,
+  boardOrientation: boardOrientationProp,
+  defaultBoardOrientation = "white",
+  onBoardOrientationChange,
+  defaultMinElo = 2500,
+  defaultMaxElo = 3000,
   fillHeight = true,
   layoutMinHeight,
   renderLayout = defaultRenderLayout,
@@ -36,6 +39,7 @@ export const PositionReferenceExplorerCore = ({
   renderGamesPanel = defaultRenderGamesPanel,
   renderBoardNav = defaultRenderBoardNav,
   onGameSelect,
+  keyboardNav = true,
 }: PositionReferenceExplorerCoreProps) => {
   const referenceData = usePositionReferenceData({
     fenProp,
@@ -56,6 +60,7 @@ export const PositionReferenceExplorerCore = ({
     topOnly,
     sources,
     loading,
+    showPositionLoading,
     gamesLoading,
     positionReady,
     displayMoves,
@@ -76,7 +81,19 @@ export const PositionReferenceExplorerCore = ({
     handlePieceDrop,
     handleBack,
     handleForward,
+    handleFirst,
+    handleLast,
   } = referenceData;
+
+  usePositionKeyboardNav({
+    enabled: keyboardNav,
+    canPrev: canGoBack,
+    canNext: canGoForward,
+    onPrev: handleBack,
+    onNext: handleForward,
+    onFirst: handleFirst,
+    onLast: handleLast,
+  });
 
   /** Defer variations so move stats stay instant; load in background when idle. */
   const [variationsEnabled, setVariationsEnabled] = useState(false);
@@ -126,6 +143,39 @@ export const PositionReferenceExplorerCore = ({
       enabled: variationsEnabled && positionReady,
     });
 
+  const [internalBoardOrientation, setInternalBoardOrientation] = useState<
+    "white" | "black"
+  >(defaultBoardOrientation);
+  const boardOrientation = boardOrientationProp ?? internalBoardOrientation;
+
+  const handleFlipBoard = useCallback(() => {
+    const nextOrientation =
+      boardOrientation === "white" ? "black" : "white";
+    if (boardOrientationProp === undefined) {
+      setInternalBoardOrientation(nextOrientation);
+    }
+    onBoardOrientationChange?.(nextOrientation);
+  }, [boardOrientation, boardOrientationProp, onBoardOrientationChange]);
+
+  const boardNavProps = useMemo(
+    () => ({
+      canGoBack,
+      canGoForward,
+      onBack: handleBack,
+      onForward: handleForward,
+      boardOrientation,
+      onFlipBoard: handleFlipBoard,
+    }),
+    [
+      boardOrientation,
+      canGoBack,
+      canGoForward,
+      handleBack,
+      handleFlipBoard,
+      handleForward,
+    ],
+  );
+
   const outerStyle: CSSProperties = {
     width: "100%",
     height: fillHeight ? "100%" : "auto",
@@ -138,8 +188,10 @@ export const PositionReferenceExplorerCore = ({
     <>
       <ChessboardDnDProvider>
         <HighlightChessboard
+          key={boardOrientation}
           boardWidth={boardWidth}
           position={boardFen}
+          boardOrientation={boardOrientation}
           checkSquare=""
           hintSquare={null}
           incorrectMoveSquare={null}
@@ -147,12 +199,7 @@ export const PositionReferenceExplorerCore = ({
           promotionDialogVariant="modal"
         />
       </ChessboardDnDProvider>
-      {renderBoardNav({
-        canGoBack,
-        canGoForward,
-        onBack: handleBack,
-        onForward: handleForward,
-      })}
+      {renderBoardNav(boardNavProps)}
     </>
   );
 
@@ -161,7 +208,7 @@ export const PositionReferenceExplorerCore = ({
       theme={theme}
       status={renderStatus({
         error,
-        loading: loading && !positionReady,
+        loading: showPositionLoading,
       })}
       moveStats={renderMoveStats({
         moves: displayMoves,

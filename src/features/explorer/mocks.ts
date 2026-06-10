@@ -1,5 +1,6 @@
 import type {
   FetchPositionGamesParams,
+  FetchPositionParams,
   FetchPositionVariationsParams,
   PositionApiDto,
   PositionGamesApiDto,
@@ -45,8 +46,8 @@ const mockPosition: PositionApiDto = {
 const mockGames: PositionGamesApiDto = {
   positionKey: "mock-start",
   fen: EXPLORER_START_FEN,
-  minElo: 2200,
-  maxElo: 2800,
+  minElo: 2500,
+  maxElo: 3000,
   topOnly: false,
   games: [
     {
@@ -81,9 +82,9 @@ const mockGames: PositionGamesApiDto = {
 };
 
 export async function mockFetchPosition(
-  fen: string,
+  params: FetchPositionParams,
 ): Promise<PositionApiDto | null> {
-  void fen;
+  void params;
   return mockPosition;
 }
 
@@ -123,7 +124,11 @@ function mockVariationLines(
 export async function mockFetchPositionVariations(
   params: FetchPositionVariationsParams,
 ): Promise<PositionVariationsApiDto | null> {
-  const position = await mockFetchPosition(params.fen);
+  const position = await mockFetchPosition({
+    fen: params.fen,
+    minElo: params.minElo,
+    maxElo: params.maxElo,
+  });
   if (!position) return null;
   return mockVariationLines(params, position);
 }

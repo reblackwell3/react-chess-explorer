@@ -40,7 +40,7 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
             style={{ ...tdStyle, opacity: 0.7, fontStyle: "italic" }}
           >
             No games match this position and filter. Widen the Elo range or turn
-            off Top games.
+            off Top by avg Elo.
           </td>
         </tr>
       ) : (

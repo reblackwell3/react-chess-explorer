@@ -90,7 +90,7 @@ export const PositionGamesPanel = ({
             checked={topOnly}
             onChange={(e) => onTopOnlyChange(e.target.checked)}
           />
-          Top games
+          Top by avg Elo
         </label>
         <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <input

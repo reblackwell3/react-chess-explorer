@@ -1,17 +1,12 @@
+import type { BoardNavRenderProps } from "../core/renderProps";
 import { boardNavButtonStyle, boardNavStyle } from "./explorerStyles";
-
-export type BoardNavRenderProps = {
-  canGoBack: boolean;
-  canGoForward: boolean;
-  onBack: () => void;
-  onForward: () => void;
-};
 
 export const DefaultBoardNav = ({
   canGoBack,
   canGoForward,
   onBack,
   onForward,
+  onFlipBoard,
 }: BoardNavRenderProps) => (
   <div style={boardNavStyle}>
     <button
@@ -33,6 +28,15 @@ export const DefaultBoardNav = ({
       title="Forward"
     >
       ▶
+    </button>
+    <button
+      type="button"
+      style={boardNavButtonStyle}
+      onClick={onFlipBoard}
+      aria-label="Flip board"
+      title="Flip board"
+    >
+      ⇅
     </button>
   </div>
 );

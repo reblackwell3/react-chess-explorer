@@ -1,5 +1,6 @@
 import type {
   FetchPositionGamesParams,
+  FetchPositionParams,
   FetchPositionVariationsParams,
   PositionGamesApiDto,
   PositionVariationsApiDto,
@@ -12,8 +13,9 @@ import {
   NC6_TABIYA_FEN,
 } from "./nc6SampleGames";
 
-export async function nc6FetchPosition(fen: string) {
-  return nc6PositionForFen(fen);
+export async function nc6FetchPosition(params: FetchPositionParams) {
+  void params;
+  return nc6PositionForFen(params.fen);
 }
 
 export async function nc6FetchPositionGames(
@@ -42,7 +44,11 @@ export async function nc6FetchPositionGames(
 export async function nc6FetchPositionVariations(
   params: FetchPositionVariationsParams,
 ): Promise<PositionVariationsApiDto | null> {
-  const position = await nc6FetchPosition(params.fen);
+  const position = await nc6FetchPosition({
+    fen: params.fen,
+    minElo: params.minElo,
+    maxElo: params.maxElo,
+  });
   if (!position) return null;
 
   const lineCount = params.lineCount ?? 8;
