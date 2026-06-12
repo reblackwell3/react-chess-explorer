@@ -16,11 +16,10 @@ export type PositionGamesPanelProps = {
   maxElo: number;
   defaultMinElo: number;
   defaultMaxElo: number;
-  topOnly: boolean;
+  lineSans: string[];
   sources: GameSource[];
   onMinEloChange: (value: number) => void;
   onMaxEloChange: (value: number) => void;
-  onTopOnlyChange: (value: boolean) => void;
   onSourcesChange: (sources: GameSource[]) => void;
   onGameSelect?: (game: PositionGameRowApiDto) => void;
 };
@@ -36,11 +35,10 @@ export const PositionGamesPanel = ({
   maxElo,
   defaultMinElo,
   defaultMaxElo,
-  topOnly,
+  lineSans: _lineSans,
   sources,
   onMinEloChange,
   onMaxEloChange,
-  onTopOnlyChange,
   onSourcesChange,
   onGameSelect,
 }: PositionGamesPanelProps) => {
@@ -84,14 +82,6 @@ export const PositionGamesPanel = ({
           onMinEloChange={onMinEloChange}
           onMaxEloChange={onMaxEloChange}
         />
-        <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
-          <input
-            type="checkbox"
-            checked={topOnly}
-            onChange={(e) => onTopOnlyChange(e.target.checked)}
-          />
-          Top by avg Elo
-        </label>
         <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <input
             type="checkbox"

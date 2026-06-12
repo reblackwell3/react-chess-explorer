@@ -254,7 +254,6 @@ export function nc6GamesForPosition(
     minElo: number;
     maxElo: number;
     uci?: string;
-    topOnly: boolean;
     sources?: ("lichess" | "twic")[];
   },
 ): PositionGameRowApiDto[] {
@@ -266,9 +265,6 @@ export function nc6GamesForPosition(
       return false;
     }
     if (options.uci && game.nextUci !== options.uci) {
-      return false;
-    }
-    if (options.topOnly && game.avgElo < 2500) {
       return false;
     }
     if (options.sources?.length && !options.sources.includes(game.source)) {

@@ -49,16 +49,15 @@ export type LineHeaderRenderProps = {
 export type GamesPanelRenderProps = {
   games: PositionGameRowApiDto[];
   lineLabel: string;
+  lineSans: string[];
   loading?: boolean;
   minElo: number;
   maxElo: number;
   defaultMinElo: number;
   defaultMaxElo: number;
-  topOnly: boolean;
   sources: GameSource[];
   onMinEloChange: (value: number) => void;
   onMaxEloChange: (value: number) => void;
-  onTopOnlyChange: (value: boolean) => void;
   onSourcesChange: (sources: GameSource[]) => void;
   /** Start replay training for a database game from the current board FEN. */
   onGameSelect?: (game: PositionGameRowApiDto) => void;

@@ -63,7 +63,6 @@ export function usePositionReferenceData({
   >();
   const [minElo, setMinElo] = useState(defaultMinElo);
   const [maxElo, setMaxElo] = useState(defaultMaxElo);
-  const [topOnly, setTopOnly] = useState(false);
   const [sources, setSources] = useState<GameSource[]>([...ALL_GAME_SOURCES]);
   const [loading, setLoading] = useState(false);
   const [gamesLoading, setGamesLoading] = useState(false);
@@ -329,7 +328,6 @@ export function usePositionReferenceData({
             minElo,
             maxElo,
             uci: gamesMoveFilterUci,
-            topOnly,
             sources:
               sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
           });
@@ -372,7 +370,6 @@ export function usePositionReferenceData({
     minElo,
     maxElo,
     gamesMoveFilterUci,
-    topOnly,
     sources,
     fetchPositionGames,
   ]);
@@ -520,8 +517,8 @@ export function usePositionReferenceData({
     gamesMoveFilterUci,
     minElo,
     maxElo,
-    topOnly,
     sources,
+    lineSans,
     loading,
     showPositionLoading,
     gamesLoading,
@@ -536,7 +533,6 @@ export function usePositionReferenceData({
     selectedVariationKey,
     setMinElo,
     setMaxElo,
-    setTopOnly,
     setSources,
     setVariationsTab,
     setGamesMoveFilterUci,

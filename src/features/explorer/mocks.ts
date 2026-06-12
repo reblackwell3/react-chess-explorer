@@ -48,7 +48,8 @@ const mockGames: PositionGamesApiDto = {
   fen: EXPLORER_START_FEN,
   minElo: 2500,
   maxElo: 3000,
-  topOnly: false,
+  offset: 0,
+  hasMore: false,
   games: [
     {
       gameId: "abc123",
@@ -144,13 +145,19 @@ export async function mockFetchPositionGames(
     filtered = filtered.filter((game) => params.sources!.includes(game.source));
   }
 
+  const offset = params.offset ?? 0;
+  const limit = params.limit ?? filtered.length;
+  const page = filtered.slice(offset, offset + limit);
+  const hasMore = offset + limit < filtered.length;
+
   return {
     ...mockGames,
     fen: params.fen,
     minElo: params.minElo,
     maxElo: params.maxElo,
     uci: params.uci,
-    topOnly: params.topOnly,
-    games: params.topOnly ? filtered.filter((g) => g.avgElo >= 2500) : filtered,
+    offset,
+    hasMore,
+    games: page,
   };
 }

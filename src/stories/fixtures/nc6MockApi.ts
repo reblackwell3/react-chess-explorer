@@ -26,9 +26,11 @@ export async function nc6FetchPositionGames(
     minElo: params.minElo,
     maxElo: params.maxElo,
     uci: params.uci,
-    topOnly: params.topOnly,
     sources: params.sources,
   });
+  const offset = params.offset ?? 0;
+  const limit = params.limit ?? games.length;
+  const page = games.slice(offset, offset + limit);
 
   return {
     positionKey: position?.positionKey ?? `storybook-${params.fen}`,
@@ -36,8 +38,9 @@ export async function nc6FetchPositionGames(
     minElo: params.minElo,
     maxElo: params.maxElo,
     uci: params.uci,
-    topOnly: params.topOnly,
-    games,
+    offset,
+    hasMore: offset + limit < games.length,
+    games: page,
   };
 }
 

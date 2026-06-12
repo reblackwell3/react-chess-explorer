@@ -45,7 +45,8 @@ export type PositionGamesApiDto = {
   minElo: number;
   maxElo: number;
   uci?: string;
-  topOnly: boolean;
+  offset: number;
+  hasMore: boolean;
   games: PositionGameRowApiDto[];
 };
 
@@ -61,8 +62,8 @@ export type FetchPositionGamesParams = {
   minElo: number;
   maxElo: number;
   uci?: string;
-  topOnly: boolean;
   limit?: number;
+  offset?: number;
   sources?: GameSource[];
 };
 
