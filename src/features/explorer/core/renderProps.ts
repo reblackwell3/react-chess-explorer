@@ -51,13 +51,7 @@ export type GamesPanelRenderProps = {
   lineLabel: string;
   lineSans: string[];
   loading?: boolean;
-  minElo: number;
-  maxElo: number;
-  defaultMinElo: number;
-  defaultMaxElo: number;
   sources: GameSource[];
-  onMinEloChange: (value: number) => void;
-  onMaxEloChange: (value: number) => void;
   onSourcesChange: (sources: GameSource[]) => void;
   /** Start replay training for a database game from the current board FEN. */
   onGameSelect?: (game: PositionGameRowApiDto) => void;
@@ -96,8 +90,6 @@ export type PositionReferenceExplorerCoreProps = {
   defaultBoardOrientation?: BoardOrientation;
   /** Fired when the user flips the board (controlled or uncontrolled). */
   onBoardOrientationChange?: (orientation: BoardOrientation) => void;
-  defaultMinElo?: number;
-  defaultMaxElo?: number;
   /** When true, shell uses full viewport height (no extra content below the grid). */
   fillHeight?: boolean;
   layoutMinHeight?: string;

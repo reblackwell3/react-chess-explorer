@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import type { GameSource, PositionGameRowApiDto } from "../types";
-import { EloRangeFilter } from "./EloRangeFilter";
 import { GamesTable } from "./GamesTable";
 import {
   gamesHeaderStyle,
@@ -12,14 +11,8 @@ import {
 export type PositionGamesPanelProps = {
   games: PositionGameRowApiDto[];
   lineLabel: string;
-  minElo: number;
-  maxElo: number;
-  defaultMinElo: number;
-  defaultMaxElo: number;
   lineSans: string[];
   sources: GameSource[];
-  onMinEloChange: (value: number) => void;
-  onMaxEloChange: (value: number) => void;
   onSourcesChange: (sources: GameSource[]) => void;
   onGameSelect?: (game: PositionGameRowApiDto) => void;
 };
@@ -31,14 +24,8 @@ const mainLineTitleStyle: CSSProperties = {
 export const PositionGamesPanel = ({
   games,
   lineLabel,
-  minElo,
-  maxElo,
-  defaultMinElo,
-  defaultMaxElo,
   lineSans: _lineSans,
   sources,
-  onMinEloChange,
-  onMaxEloChange,
   onSourcesChange,
   onGameSelect,
 }: PositionGamesPanelProps) => {
@@ -74,14 +61,6 @@ export const PositionGamesPanel = ({
       </div>
 
       <div style={gamesToolbarStyle}>
-        <EloRangeFilter
-          minElo={minElo}
-          maxElo={maxElo}
-          defaultMinElo={defaultMinElo}
-          defaultMaxElo={defaultMaxElo}
-          onMinEloChange={onMinEloChange}
-          onMaxEloChange={onMaxEloChange}
-        />
         <label style={{ display: "flex", alignItems: "center", gap: 4 }}>
           <input
             type="checkbox"

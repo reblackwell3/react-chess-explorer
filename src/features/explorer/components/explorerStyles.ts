@@ -23,7 +23,8 @@ export const thStyle: CSSProperties = {
 export const tdStyle: CSSProperties = {
   padding: "3px 8px",
   borderBottom: "1px solid rgba(128,128,128,0.12)",
-  whiteSpace: "nowrap",
+  whiteSpace: "normal",
+  wordBreak: "break-word",
 };
 
 export const sectionTitleStyle: CSSProperties = {

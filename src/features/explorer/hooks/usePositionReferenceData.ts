@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EXPLORER_START_FEN, VARIATION_LINE_STEP_MS } from "../constants";
+import {
+  EXPLORER_DEFAULT_MAX_ELO,
+  EXPLORER_DEFAULT_MIN_ELO,
+  EXPLORER_START_FEN,
+  VARIATION_LINE_STEP_MS,
+} from "../constants";
 import {
   applyBoardMove,
   applyLineSans,
@@ -31,8 +36,6 @@ export type UsePositionReferenceDataOptions = {
   fetchPositionGames: (
     params: FetchPositionGamesParams,
   ) => Promise<PositionGamesApiDto>;
-  defaultMinElo: number;
-  defaultMaxElo: number;
 };
 
 export function usePositionReferenceData({
@@ -42,8 +45,6 @@ export function usePositionReferenceData({
   onLineSansChange,
   fetchPosition,
   fetchPositionGames,
-  defaultMinElo,
-  defaultMaxElo,
 }: UsePositionReferenceDataOptions) {
   const initialFen = fenProp ?? EXPLORER_START_FEN;
   const bootstrappedRef = useRef(
@@ -61,8 +62,6 @@ export function usePositionReferenceData({
   const [gamesMoveFilterUci, setGamesMoveFilterUci] = useState<
     string | undefined
   >();
-  const [minElo, setMinElo] = useState(defaultMinElo);
-  const [maxElo, setMaxElo] = useState(defaultMaxElo);
   const [sources, setSources] = useState<GameSource[]>([...ALL_GAME_SOURCES]);
   const [loading, setLoading] = useState(false);
   const [gamesLoading, setGamesLoading] = useState(false);
@@ -150,14 +149,12 @@ export function usePositionReferenceData({
     (fenValue: string) =>
       JSON.stringify({
         fen: fenValue,
-        minElo,
-        maxElo,
         sources:
           sources.length < ALL_GAME_SOURCES.length
             ? sources.slice().sort().join(",")
             : "",
       }),
-    [minElo, maxElo, sources],
+    [sources],
   );
 
   const lastAppliedLineKeyRef = useRef(initialLineKey);
@@ -263,8 +260,8 @@ export function usePositionReferenceData({
       try {
         const pos = await fetchPosition({
           fen: requestedFen,
-          minElo,
-          maxElo,
+          minElo: EXPLORER_DEFAULT_MIN_ELO,
+          maxElo: EXPLORER_DEFAULT_MAX_ELO,
           sources:
             sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
         });
@@ -296,7 +293,7 @@ export function usePositionReferenceData({
     return () => {
       cancelled = true;
     };
-  }, [queryFen, minElo, maxElo, sources, fetchPosition, positionCacheKey]);
+  }, [queryFen, sources, fetchPosition, positionCacheKey]);
 
   const activePositionFilterKey = positionCacheKey(queryFen);
   const cachedPosition = positionsByFenRef.current.get(activePositionFilterKey);
@@ -325,8 +322,8 @@ export function usePositionReferenceData({
         try {
           const gameList = await fetchPositionGames({
             fen: queryFen,
-            minElo,
-            maxElo,
+            minElo: EXPLORER_DEFAULT_MIN_ELO,
+            maxElo: EXPLORER_DEFAULT_MAX_ELO,
             uci: gamesMoveFilterUci,
             sources:
               sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
@@ -364,15 +361,7 @@ export function usePositionReferenceData({
         clearTimeout(deferTimer);
       }
     };
-  }, [
-    queryFen,
-    positionReady,
-    minElo,
-    maxElo,
-    gamesMoveFilterUci,
-    sources,
-    fetchPositionGames,
-  ]);
+  }, [queryFen, positionReady, gamesMoveFilterUci, sources, fetchPositionGames]);
 
   const handleMoveSelect = useCallback(
     (move: PositionMoveApiDto) => {
@@ -515,8 +504,6 @@ export function usePositionReferenceData({
     position,
     games,
     gamesMoveFilterUci,
-    minElo,
-    maxElo,
     sources,
     lineSans,
     loading,
@@ -531,8 +518,6 @@ export function usePositionReferenceData({
     variationsTab,
     forwardSans,
     selectedVariationKey,
-    setMinElo,
-    setMaxElo,
     setSources,
     setVariationsTab,
     setGamesMoveFilterUci,

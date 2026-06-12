@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import {
+  EXPLORER_DEFAULT_MAX_ELO,
+  EXPLORER_DEFAULT_MIN_ELO,
+} from "../constants";
 import type {
   FetchPositionVariationsParams,
   PositionVariationLineApiDto,
@@ -9,8 +13,6 @@ import type { VariationsTab } from "../variationLines";
 export type UseVariationLinesOptions = {
   fen: string;
   tab: VariationsTab;
-  minElo: number;
-  maxElo: number;
   fetchPositionVariations: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
@@ -22,8 +24,6 @@ export type UseVariationLinesOptions = {
 export function useVariationLines({
   fen,
   tab,
-  minElo,
-  maxElo,
   fetchPositionVariations,
   lineCount = 8,
   lineDepth = 4,
@@ -47,8 +47,8 @@ export function useVariationLines({
         const result = await fetchPositionVariations({
           fen,
           mode: tab,
-          minElo,
-          maxElo,
+          minElo: EXPLORER_DEFAULT_MIN_ELO,
+          maxElo: EXPLORER_DEFAULT_MAX_ELO,
           lineCount,
           depth: lineDepth,
         });
@@ -69,16 +69,7 @@ export function useVariationLines({
     return () => {
       cancelled = true;
     };
-  }, [
-    enabled,
-    fen,
-    tab,
-    minElo,
-    maxElo,
-    fetchPositionVariations,
-    lineCount,
-    lineDepth,
-  ]);
+  }, [enabled, fen, tab, fetchPositionVariations, lineCount, lineDepth]);
 
   return { lines, loading };
 }

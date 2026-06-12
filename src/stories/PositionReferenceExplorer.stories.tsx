@@ -44,8 +44,6 @@ const meta: Meta<typeof PositionReferenceExplorer> = {
     fetchPositionVariations: nc6FetchPositionVariations,
     theme: "dark",
     fillHeight: true,
-    defaultMinElo: 1800,
-    defaultMaxElo: 2800,
   },
 };
 

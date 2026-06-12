@@ -39,7 +39,7 @@ export const GamesTable = ({ games, onGameSelect }: GamesTableProps) => (
             colSpan={onGameSelect ? 7 : 6}
             style={{ ...tdStyle, opacity: 0.7, fontStyle: "italic" }}
           >
-            No games match this position and filter. Widen the Elo range.
+            No games match this position and source filter.
           </td>
         </tr>
       ) : (
