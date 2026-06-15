@@ -1,10 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  EXPLORER_DEFAULT_MAX_ELO,
-  EXPLORER_DEFAULT_MIN_ELO,
-  EXPLORER_START_FEN,
-  VARIATION_LINE_STEP_MS,
-} from "../constants";
+import { EXPLORER_START_FEN, VARIATION_LINE_STEP_MS } from "../constants";
 import {
   applyBoardMove,
   applyLineSans,
@@ -260,8 +255,6 @@ export function usePositionReferenceData({
       try {
         const pos = await fetchPosition({
           fen: requestedFen,
-          minElo: EXPLORER_DEFAULT_MIN_ELO,
-          maxElo: EXPLORER_DEFAULT_MAX_ELO,
           sources:
             sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
         });
@@ -322,8 +315,6 @@ export function usePositionReferenceData({
         try {
           const gameList = await fetchPositionGames({
             fen: queryFen,
-            minElo: EXPLORER_DEFAULT_MIN_ELO,
-            maxElo: EXPLORER_DEFAULT_MAX_ELO,
             uci: gamesMoveFilterUci,
             sources:
               sources.length < ALL_GAME_SOURCES.length ? sources : undefined,

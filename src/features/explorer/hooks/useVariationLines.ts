@@ -1,8 +1,4 @@
 import { useEffect, useState } from "react";
-import {
-  EXPLORER_DEFAULT_MAX_ELO,
-  EXPLORER_DEFAULT_MIN_ELO,
-} from "../constants";
 import type {
   FetchPositionVariationsParams,
   PositionVariationLineApiDto,
@@ -47,8 +43,6 @@ export function useVariationLines({
         const result = await fetchPositionVariations({
           fen,
           mode: tab,
-          minElo: EXPLORER_DEFAULT_MIN_ELO,
-          maxElo: EXPLORER_DEFAULT_MAX_ELO,
           lineCount,
           depth: lineDepth,
         });

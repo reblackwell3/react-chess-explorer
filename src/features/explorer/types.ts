@@ -42,8 +42,6 @@ export type PositionGameRowApiDto = {
 export type PositionGamesApiDto = {
   positionKey: string;
   fen: string;
-  minElo: number;
-  maxElo: number;
   uci?: string;
   offset: number;
   hasMore: boolean;
@@ -52,15 +50,13 @@ export type PositionGamesApiDto = {
 
 export type FetchPositionParams = {
   fen: string;
-  minElo: number;
-  maxElo: number;
+  minElo?: number;
+  maxElo?: number;
   sources?: GameSource[];
 };
 
 export type FetchPositionGamesParams = {
   fen: string;
-  minElo: number;
-  maxElo: number;
   uci?: string;
   limit?: number;
   offset?: number;
@@ -85,16 +81,16 @@ export type PositionVariationsApiDto = {
   mode: "variations" | "popularity";
   depth: number;
   lineCount: number;
-  minElo: number;
-  maxElo: number;
+  minElo?: number;
+  maxElo?: number;
   lines: PositionVariationLineApiDto[];
 };
 
 export type FetchPositionVariationsParams = {
   fen: string;
   mode: "variations" | "popularity";
-  minElo: number;
-  maxElo: number;
+  minElo?: number;
+  maxElo?: number;
   depth?: number;
   lineCount?: number;
 };

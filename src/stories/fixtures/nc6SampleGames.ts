@@ -251,8 +251,6 @@ export function nc6PositionForFen(fen: string): PositionApiDto | null {
 export function nc6GamesForPosition(
   fen: string,
   options: {
-    minElo: number;
-    maxElo: number;
     uci?: string;
     sources?: ("lichess" | "twic")[];
   },
@@ -261,9 +259,6 @@ export function nc6GamesForPosition(
   if (!bucket) return [];
 
   return bucket.gameRows.filter((game) => {
-    if (game.avgElo < options.minElo || game.avgElo > options.maxElo) {
-      return false;
-    }
     if (options.uci && game.nextUci !== options.uci) {
       return false;
     }

@@ -46,8 +46,6 @@ const mockPosition: PositionApiDto = {
 const mockGames: PositionGamesApiDto = {
   positionKey: "mock-start",
   fen: EXPLORER_START_FEN,
-  minElo: 2500,
-  maxElo: 3000,
   offset: 0,
   hasMore: false,
   games: [
@@ -151,10 +149,8 @@ export async function mockFetchPositionGames(
   const hasMore = offset + limit < filtered.length;
 
   return {
-    ...mockGames,
+    positionKey: mockGames.positionKey,
     fen: params.fen,
-    minElo: params.minElo,
-    maxElo: params.maxElo,
     uci: params.uci,
     offset,
     hasMore,

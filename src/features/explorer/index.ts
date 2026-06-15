@@ -1,8 +1,4 @@
-export {
-  EXPLORER_DEFAULT_MAX_ELO,
-  EXPLORER_DEFAULT_MIN_ELO,
-  EXPLORER_START_FEN,
-} from "./constants";
+export { EXPLORER_START_FEN } from "./constants";
 export {
   ExplorerPlaceholder,
   type ExplorerPlaceholderProps,

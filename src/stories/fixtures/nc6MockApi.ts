@@ -23,8 +23,6 @@ export async function nc6FetchPositionGames(
 ): Promise<PositionGamesApiDto> {
   const position = nc6PositionForFen(params.fen);
   const games = nc6GamesForPosition(params.fen, {
-    minElo: params.minElo,
-    maxElo: params.maxElo,
     uci: params.uci,
     sources: params.sources,
   });
@@ -35,8 +33,6 @@ export async function nc6FetchPositionGames(
   return {
     positionKey: position?.positionKey ?? `storybook-${params.fen}`,
     fen: params.fen,
-    minElo: params.minElo,
-    maxElo: params.maxElo,
     uci: params.uci,
     offset,
     hasMore: offset + limit < games.length,
