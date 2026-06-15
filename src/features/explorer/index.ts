@@ -17,7 +17,6 @@ export type {
   VariationsStripRenderProps,
   BoardNavRenderProps,
 } from "./core/renderProps";
-export type { VariationsTab } from "./variationLines";
 export {
   DEFAULT_REFERENCE_LAYOUT,
   DefaultReferenceLayout,
@@ -59,6 +58,7 @@ export {
 export {
   applyLineSans,
   fenAfterUci,
+  formatNumberedLineSans,
   normalizeFen,
   whiteScorePercent,
 } from "./positionUtils";

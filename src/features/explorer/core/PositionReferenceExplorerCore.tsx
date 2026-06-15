@@ -63,11 +63,9 @@ export const PositionReferenceExplorerCore = ({
     lineLabel,
     canGoBack,
     canGoForward,
-    variationsTab,
     forwardSans,
     selectedVariationKey,
     setSources,
-    setVariationsTab,
     handleMoveSelect,
     handleLineSelect,
     handlePieceDrop,
@@ -117,18 +115,9 @@ export const PositionReferenceExplorerCore = ({
     };
   }, [fen, positionReady, loading]);
 
-  const handleVariationsTabChange = useCallback(
-    (tab: typeof variationsTab) => {
-      setVariationsEnabled(true);
-      setVariationsTab(tab);
-    },
-    [setVariationsTab],
-  );
-
   const { lines: variationLines, loading: variationLinesLoading } =
     useVariationLines({
       fen,
-      tab: variationsTab,
       fetchPositionVariations,
       enabled: variationsEnabled && positionReady,
     });
@@ -206,8 +195,6 @@ export const PositionReferenceExplorerCore = ({
       })}
       variationsStrip={renderVariationsStrip({
         theme,
-        tab: variationsTab,
-        onTabChange: handleVariationsTabChange,
         lines: variationLines,
         loading: !variationsEnabled || variationLinesLoading,
         selectedLineKey: selectedVariationKey,

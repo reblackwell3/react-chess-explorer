@@ -1,27 +1,9 @@
-import type { CSSProperties } from "react";
 import type { VariationsStripRenderProps } from "../core/renderProps";
-import {
-  variationsStripStyle,
-  variationsTabStyle,
-} from "../components/explorerStyles";
+import { variationsStripStyle } from "../components/explorerStyles";
 import { isVariationLineActive } from "../variationLines";
-
-const tabButtonStyle = (active: boolean): CSSProperties => ({
-  ...variationsTabStyle,
-  fontWeight: active ? 600 : 400,
-  opacity: active ? 1 : 0.55,
-  cursor: "pointer",
-  border: "none",
-  background: "transparent",
-  padding: 0,
-  color: "inherit",
-  font: "inherit",
-});
 
 export const DefaultVariationsStrip = ({
   theme,
-  tab,
-  onTabChange,
   lines,
   loading,
   selectedLineKey,
@@ -37,30 +19,6 @@ export const DefaultVariationsStrip = ({
     }}
     data-theme={theme}
   >
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <button
-        type="button"
-        style={tabButtonStyle(tab === "variations")}
-        onClick={() => onTabChange("variations")}
-      >
-        Variations
-      </button>
-      <button
-        type="button"
-        style={tabButtonStyle(tab === "popularity")}
-        onClick={() => onTabChange("popularity")}
-      >
-        Popularity
-      </button>
-      <button
-        type="button"
-        style={tabButtonStyle(tab === "endgames")}
-        onClick={() => onTabChange("endgames")}
-      >
-        Endgames
-      </button>
-    </div>
-
     <div
       style={{
         minWidth: 0,
@@ -68,9 +26,7 @@ export const DefaultVariationsStrip = ({
         overflow: "auto",
       }}
     >
-      {tab === "endgames" ? (
-        <span style={{ fontSize: 11, opacity: 0.55 }}>Coming soon</span>
-      ) : loading ? (
+      {loading ? (
         <span style={{ fontSize: 11, opacity: 0.55 }}>Loading…</span>
       ) : lines.length === 0 ? (
         <span style={{ fontSize: 11, opacity: 0.55 }}>No lines</span>

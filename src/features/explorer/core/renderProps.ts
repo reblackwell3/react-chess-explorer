@@ -12,7 +12,6 @@ import type {
   PositionVariationsApiDto,
 } from "../types";
 import type { BoardThemeId } from "react-chess-core";
-import type { VariationsTab } from "../variationLines";
 
 export type ReferenceLayoutRenderProps = {
   theme: "light" | "dark";
@@ -60,8 +59,6 @@ export type GamesPanelRenderProps = {
 
 export type VariationsStripRenderProps = {
   theme: "light" | "dark";
-  tab: VariationsTab;
-  onTabChange: (tab: VariationsTab) => void;
   lines: PositionVariationLineApiDto[];
   loading: boolean;
   selectedLineKey?: string;

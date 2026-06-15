@@ -1,7 +1,5 @@
 import type { PositionVariationLineApiDto } from "./types";
 
-export type VariationsTab = "variations" | "popularity" | "endgames";
-
 /** @deprecated Use PositionVariationLineApiDto from ./types */
 export type PositionVariationLine = PositionVariationLineApiDto;
 

@@ -4,6 +4,7 @@ import {
   applyBoardMove,
   applyLineSans,
   fenAfterUci,
+  formatNumberedLineSans,
   normalizeFen,
 } from "../positionUtils";
 import {
@@ -16,7 +17,6 @@ import {
   type PositionMoveApiDto,
 } from "../types";
 import type { PositionVariationLineApiDto } from "../types";
-import type { VariationsTab } from "../variationLines";
 import {
   initialHistoryState,
   usePositionHistory,
@@ -68,8 +68,6 @@ export function usePositionReferenceData({
     string | null
   >(null);
   const [error, setError] = useState<string | null>(null);
-  const [variationsTab, setVariationsTab] =
-    useState<VariationsTab>("variations");
   const [selectedVariationKey, setSelectedVariationKey] = useState<
     string | undefined
   >();
@@ -479,7 +477,7 @@ export function usePositionReferenceData({
 
   const lineLabel = useMemo(() => {
     if (lineSans.length > 0) {
-      return lineSans.join(" ");
+      return formatNumberedLineSans(lineSans);
     }
     if (position && typeof position.totalGames === "number") {
       return `Starting position (${position.totalGames.toLocaleString()} games)`;
@@ -504,11 +502,9 @@ export function usePositionReferenceData({
     lineLabel,
     canGoBack,
     canGoForward,
-    variationsTab,
     forwardSans,
     selectedVariationKey,
     setSources,
-    setVariationsTab,
     setGamesMoveFilterUci,
     handleMoveSelect,
     handleLineSelect,

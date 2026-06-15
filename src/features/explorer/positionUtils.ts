@@ -94,3 +94,22 @@ export function whiteScorePercent(
   if (total === 0) return null;
   return Math.round((100 * (whiteWins + 0.5 * draws)) / total);
 }
+
+/** Format SAN plies from the starting position as `1.d4 Nf6 2.c4 e6`. */
+export function formatNumberedLineSans(sans: string[]): string {
+  if (sans.length === 0) {
+    return "";
+  }
+
+  const parts: string[] = [];
+  for (let i = 0; i < sans.length; i += 2) {
+    const moveNumber = i / 2 + 1;
+    const white = sans[i];
+    const black = sans[i + 1];
+    parts.push(
+      black ? `${moveNumber}.${white} ${black}` : `${moveNumber}.${white}`,
+    );
+  }
+
+  return parts.join(" ");
+}

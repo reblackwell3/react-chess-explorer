@@ -2,7 +2,6 @@ import type { PositionMoveApiDto } from "../types";
 import { whiteScorePercent } from "../positionUtils";
 import {
   moveStatsSectionStyle,
-  sectionTitleStyle,
   tableStyle,
   tdStyle,
   thStyle,
@@ -20,7 +19,6 @@ export const MoveStatsTable = ({
   onMoveSelect,
 }: MoveStatsTableProps) => (
   <div style={moveStatsSectionStyle}>
-    <div style={sectionTitleStyle}>Moves</div>
     <table style={tableStyle}>
       <thead>
         <tr>

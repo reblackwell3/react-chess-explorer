@@ -4,11 +4,8 @@ import type {
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
 } from "../types";
-import type { VariationsTab } from "../variationLines";
-
 export type UseVariationLinesOptions = {
   fen: string;
-  tab: VariationsTab;
   fetchPositionVariations: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
@@ -19,7 +16,6 @@ export type UseVariationLinesOptions = {
 
 export function useVariationLines({
   fen,
-  tab,
   fetchPositionVariations,
   lineCount = 8,
   lineDepth = 4,
@@ -29,7 +25,7 @@ export function useVariationLines({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!enabled || tab === "endgames") {
+    if (!enabled) {
       setLines([]);
       setLoading(false);
       return;
@@ -42,7 +38,7 @@ export function useVariationLines({
       try {
         const result = await fetchPositionVariations({
           fen,
-          mode: tab,
+          mode: "variations",
           lineCount,
           depth: lineDepth,
         });
@@ -63,7 +59,7 @@ export function useVariationLines({
     return () => {
       cancelled = true;
     };
-  }, [enabled, fen, tab, fetchPositionVariations, lineCount, lineDepth]);
+  }, [enabled, fen, fetchPositionVariations, lineCount, lineDepth]);
 
   return { lines, loading };
 }
