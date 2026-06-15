@@ -11,6 +11,7 @@ import type {
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
 } from "../types";
+import type { BoardThemeId } from "react-chess-core";
 import type { VariationsTab } from "../variationLines";
 
 export type ReferenceLayoutRenderProps = {
@@ -83,6 +84,9 @@ export type PositionReferenceExplorerCoreProps = {
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
   theme?: "light" | "dark";
+  boardTheme?: BoardThemeId;
+  /** Reserved for board move sounds (wired when react-chess-core supports it). */
+  boardSoundsEnabled?: boolean;
   boardWidth?: number;
   /** Controlled board orientation. When omitted, orientation is managed internally. */
   boardOrientation?: BoardOrientation;

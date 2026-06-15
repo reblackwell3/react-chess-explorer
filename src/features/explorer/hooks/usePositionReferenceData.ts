@@ -238,10 +238,8 @@ export function usePositionReferenceData({
     let cancelled = false;
     const requestedFen = queryFen;
     const requestedFilterKey = positionCacheKey(requestedFen);
-    const cached = positionsByFenRef.current.get(requestedFilterKey);
-
-    if (cached) {
-      setPosition(cached);
+    if (positionsByFenRef.current.has(requestedFilterKey)) {
+      setPosition(positionsByFenRef.current.get(requestedFilterKey)!);
       setLoadedPositionFen(requestedFen);
       setLoadedPositionFilterKey(requestedFilterKey);
       setLoading(false);
@@ -260,14 +258,14 @@ export function usePositionReferenceData({
         });
         if (cancelled || requestedFen !== queryFenRef.current) return;
         if (pos) {
-          positionsByFenRef.current.set(positionCacheKey(requestedFen), pos);
+          positionsByFenRef.current.set(
+            positionCacheKey(requestedFen),
+            pos,
+          );
         }
         setPosition(pos);
         setLoadedPositionFen(requestedFen);
         setLoadedPositionFilterKey(positionCacheKey(requestedFen));
-        if (!pos) {
-          setError("No explorer data for this position yet");
-        }
       } catch (e) {
         if (cancelled || requestedFen !== queryFenRef.current) return;
         setPosition(null);
@@ -292,12 +290,12 @@ export function usePositionReferenceData({
   const cachedPosition = positionsByFenRef.current.get(activePositionFilterKey);
   const positionReady =
     loadedPositionFen === queryFen &&
-    loadedPositionFilterKey === activePositionFilterKey &&
-    position != null;
+    loadedPositionFilterKey === activePositionFilterKey;
   const displayPosition =
-    cachedPosition ??
-    (positionReady ? position : null);
-  const displayMoves = displayPosition?.moves ?? [];
+    cachedPosition ?? (positionReady ? position : null);
+  const displayMoves = Array.isArray(displayPosition?.moves)
+    ? displayPosition.moves
+    : [];
   const showPositionLoading = loading && displayMoves.length === 0;
 
   useEffect(() => {
@@ -483,7 +481,7 @@ export function usePositionReferenceData({
     if (lineSans.length > 0) {
       return lineSans.join(" ");
     }
-    if (position) {
+    if (position && typeof position.totalGames === "number") {
       return `Starting position (${position.totalGames.toLocaleString()} games)`;
     }
     return "";

@@ -24,6 +24,7 @@ export const PositionReferenceExplorerCore = ({
   fetchPositionGames,
   fetchPositionVariations,
   theme = "dark",
+  boardTheme,
   boardWidth = DEFAULT_REFERENCE_LAYOUT.boardWidth,
   boardOrientation: boardOrientationProp,
   defaultBoardOrientation = "white",
@@ -214,7 +215,7 @@ export const PositionReferenceExplorerCore = ({
         onLineSelect: handleLineSelect,
       })}
       gamesPanel={renderGamesPanel({
-        games: games?.games ?? [],
+        games: Array.isArray(games?.games) ? games.games : [],
         loading: gamesLoading,
         lineLabel,
         lineSans,
@@ -226,7 +227,7 @@ export const PositionReferenceExplorerCore = ({
   );
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme} boardTheme={boardTheme}>
       <div style={outerStyle}>
         {renderLayout({ theme, board, referencePanel })}
       </div>

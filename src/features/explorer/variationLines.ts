@@ -16,5 +16,9 @@ export function isVariationLineActive(
   if (forwardSans.length === 0) {
     return false;
   }
-  return forwardSans.every((san, index) => line.moves[index]?.san === san);
+  const moves = line.moves;
+  if (!Array.isArray(moves)) {
+    return false;
+  }
+  return forwardSans.every((san, index) => moves[index]?.san === san);
 }
