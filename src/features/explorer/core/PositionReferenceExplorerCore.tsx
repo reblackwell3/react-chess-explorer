@@ -12,8 +12,16 @@ import {
   defaultRenderVariationsStrip,
 } from "../defaults/defaultRenderers";
 import { DEFAULT_REFERENCE_LAYOUT } from "../referenceLayout";
+import { EXPLORER_START_FEN } from "../constants";
+import { normalizeFen } from "../positionUtils";
 import { usePositionReferenceData } from "../hooks/usePositionReferenceData";
 import { useVariationLines } from "../hooks/useVariationLines";
+import {
+  EXPLORER_DEFAULT_VARIATION_DEPTH,
+  EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+  peekSessionVariations,
+  variationsSessionKey,
+} from "../explorerSessionCache";
 import type { PositionReferenceExplorerCoreProps } from "./renderProps";
 export const PositionReferenceExplorerCore = ({
   fen: fenProp,
@@ -47,6 +55,7 @@ export const PositionReferenceExplorerCore = ({
     onLineSansChange,
     fetchPosition,
     fetchPositionGames,
+    fetchPositionVariations,
   });
   const {
     fen,
@@ -85,41 +94,44 @@ export const PositionReferenceExplorerCore = ({
     onLast: handleLast,
   });
 
-  /** Defer variations so move stats stay instant; load in background when idle. */
-  const [variationsEnabled, setVariationsEnabled] = useState(false);
+  const [variationsEnabled, setVariationsEnabled] = useState(
+    () => normalizeFen(fen) === normalizeFen(EXPLORER_START_FEN),
+  );
+  const isStartPosition =
+    normalizeFen(fen) === normalizeFen(EXPLORER_START_FEN);
 
   useEffect(() => {
-    setVariationsEnabled(false);
-    if (!positionReady || loading) return;
-
-    let idleHandle: number | undefined;
-    let deferTimer: ReturnType<typeof setTimeout> | undefined;
-
-    const enableVariations = () => setVariationsEnabled(true);
-
-    if (typeof window.requestIdleCallback === "function") {
-      idleHandle = window.requestIdleCallback(enableVariations, {
-        timeout: 2000,
-      });
-    } else {
-      deferTimer = setTimeout(enableVariations, 1000);
+    const cachedVariations = peekSessionVariations(
+      variationsSessionKey(
+        fen,
+        EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+        EXPLORER_DEFAULT_VARIATION_DEPTH,
+      ),
+    );
+    if (cachedVariations) {
+      setVariationsEnabled(true);
+      return;
     }
 
-    return () => {
-      if (idleHandle !== undefined) {
-        window.cancelIdleCallback(idleHandle);
-      }
-      if (deferTimer !== undefined) {
-        clearTimeout(deferTimer);
-      }
-    };
-  }, [fen, positionReady, loading]);
+    if (!positionReady && !isStartPosition) {
+      setVariationsEnabled(false);
+      return;
+    }
+
+    if (loading && !isStartPosition) {
+      setVariationsEnabled(false);
+      return;
+    }
+
+    setVariationsEnabled(true);
+  }, [fen, positionReady, loading, isStartPosition]);
 
   const { lines: variationLines, loading: variationLinesLoading } =
     useVariationLines({
       fen,
       fetchPositionVariations,
-      enabled: variationsEnabled && positionReady,
+      enabled:
+        variationsEnabled && (positionReady || isStartPosition),
     });
 
   const [internalBoardOrientation, setInternalBoardOrientation] = useState<

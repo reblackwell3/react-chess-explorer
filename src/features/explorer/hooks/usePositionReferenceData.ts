@@ -11,12 +11,21 @@ import {
   ALL_GAME_SOURCES,
   type FetchPositionGamesParams,
   type FetchPositionParams,
+  type FetchPositionVariationsParams,
   type GameSource,
   type PositionApiDto,
   type PositionGamesApiDto,
   type PositionMoveApiDto,
+  type PositionVariationsApiDto,
 } from "../types";
 import type { PositionVariationLineApiDto } from "../types";
+import {
+  gamesSessionKey,
+  peekSessionGames,
+  setSessionGames,
+  subscribeExplorerSessionCache,
+} from "../explorerSessionCache";
+import { useExplorerPrefetch } from "./useExplorerPrefetch";
 import {
   initialHistoryState,
   usePositionHistory,
@@ -31,6 +40,9 @@ export type UsePositionReferenceDataOptions = {
   fetchPositionGames: (
     params: FetchPositionGamesParams,
   ) => Promise<PositionGamesApiDto>;
+  fetchPositionVariations?: (
+    params: FetchPositionVariationsParams,
+  ) => Promise<PositionVariationsApiDto | null>;
 };
 
 export function usePositionReferenceData({
@@ -40,6 +52,7 @@ export function usePositionReferenceData({
   onLineSansChange,
   fetchPosition,
   fetchPositionGames,
+  fetchPositionVariations,
 }: UsePositionReferenceDataOptions) {
   const initialFen = fenProp ?? EXPLORER_START_FEN;
   const bootstrappedRef = useRef(
@@ -48,18 +61,24 @@ export function usePositionReferenceData({
   const bootstrappedFen =
     bootstrappedRef.current.history[bootstrappedRef.current.historyIndex]
       ?.fen ?? initialFen;
+  const initialGamesKey = gamesSessionKey({ fen: bootstrappedFen });
+  const initialCachedGames = peekSessionGames(initialGamesKey);
   const [fen, setFen] = useState(bootstrappedFen);
   /** Board display FEN; may lead {@link queryFen} while a variation line is animating. */
   const [boardFen, setBoardFen] = useState(bootstrappedFen);
   const [position, setPosition] = useState<PositionApiDto | null>(null);
-  const [games, setGames] = useState<PositionGamesApiDto | null>(null);
+  const [games, setGames] = useState<PositionGamesApiDto | null>(
+    () => initialCachedGames ?? null,
+  );
   /** Filter games to those that played this UCI from the current FEN (optional). */
   const [gamesMoveFilterUci, setGamesMoveFilterUci] = useState<
     string | undefined
   >();
   const [sources, setSources] = useState<GameSource[]>([...ALL_GAME_SOURCES]);
   const [loading, setLoading] = useState(false);
-  const [gamesLoading, setGamesLoading] = useState(false);
+  const [gamesLoading, setGamesLoading] = useState(
+    () => initialCachedGames === undefined,
+  );
   /** FEN that {@link position} was loaded for (may lag {@link fen} while fetching). */
   const [loadedPositionFen, setLoadedPositionFen] = useState<string | null>(
     null,
@@ -146,6 +165,16 @@ export function usePositionReferenceData({
           sources.length < ALL_GAME_SOURCES.length
             ? sources.slice().sort().join(",")
             : "",
+      }),
+    [sources],
+  );
+  const gamesCacheKey = useCallback(
+    (fenValue: string, uci?: string) =>
+      gamesSessionKey({
+        fen: fenValue,
+        uci,
+        sources:
+          sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
       }),
     [sources],
   );
@@ -295,60 +324,77 @@ export function usePositionReferenceData({
     ? displayPosition.moves
     : [];
   const showPositionLoading = loading && displayMoves.length === 0;
+  const isStartPosition =
+    normalizeFen(queryFen) === normalizeFen(EXPLORER_START_FEN);
+
+  useExplorerPrefetch({
+    fen: queryFen,
+    moves: displayMoves,
+    positionReady,
+    sources,
+    fetchPositionGames,
+    fetchPositionVariations,
+  });
 
   useEffect(() => {
-    if (!positionReady) return;
+    return subscribeExplorerSessionCache(() => {
+      const key = gamesCacheKey(queryFen, gamesMoveFilterUci);
+      const cached = peekSessionGames(key);
+      if (!cached) {
+        return;
+      }
+      setGames(cached);
+      setGamesLoading(false);
+    });
+  }, [queryFen, gamesMoveFilterUci, gamesCacheKey]);
+
+  useEffect(() => {
+    const canLoadGames =
+      positionReady || (isStartPosition && !gamesMoveFilterUci);
+    if (!canLoadGames) return;
 
     let cancelled = false;
-    let idleHandle: number | undefined;
-    let deferTimer: ReturnType<typeof setTimeout> | undefined;
-
-    const loadGames = () => {
-      if (cancelled) return;
+    const requestedKey = gamesCacheKey(queryFen, gamesMoveFilterUci);
+    const cachedGames = peekSessionGames(requestedKey);
+    if (cachedGames) {
+      setGames(cachedGames);
+      setGamesLoading(false);
+    } else {
       setGamesLoading(true);
+    }
 
-      void (async () => {
-        try {
-          const gameList = await fetchPositionGames({
-            fen: queryFen,
-            uci: gamesMoveFilterUci,
-            sources:
-              sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
-          });
-          if (cancelled) return;
-          setGames(gameList);
-        } catch {
-          if (!cancelled) {
-            setGames(null);
-          }
-        } finally {
-          if (!cancelled) setGamesLoading(false);
-        }
-      })();
-    };
-
-    const scheduleGames = () => {
-      if (typeof window.requestIdleCallback === "function") {
-        idleHandle = window.requestIdleCallback(() => loadGames(), {
-          timeout: 1500,
+    void (async () => {
+      try {
+        const gameList = await fetchPositionGames({
+          fen: queryFen,
+          uci: gamesMoveFilterUci,
+          sources:
+            sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
         });
-      } else {
-        deferTimer = setTimeout(loadGames, 750);
+        if (cancelled) return;
+        setSessionGames(requestedKey, gameList);
+        setGames(gameList);
+      } catch {
+        if (!cancelled) {
+          setGames(null);
+        }
+      } finally {
+        if (!cancelled) setGamesLoading(false);
       }
-    };
-
-    scheduleGames();
+    })();
 
     return () => {
       cancelled = true;
-      if (idleHandle !== undefined) {
-        window.cancelIdleCallback(idleHandle);
-      }
-      if (deferTimer !== undefined) {
-        clearTimeout(deferTimer);
-      }
     };
-  }, [queryFen, positionReady, gamesMoveFilterUci, sources, fetchPositionGames]);
+  }, [
+    queryFen,
+    positionReady,
+    isStartPosition,
+    gamesMoveFilterUci,
+    sources,
+    fetchPositionGames,
+    gamesCacheKey,
+  ]);
 
   const handleMoveSelect = useCallback(
     (move: PositionMoveApiDto) => {

@@ -1,9 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  EXPLORER_DEFAULT_VARIATION_DEPTH,
+  EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+  peekSessionVariations,
+  setSessionVariations,
+  subscribeExplorerSessionCache,
+  variationsSessionKey,
+} from "../explorerSessionCache";
 import type {
   FetchPositionVariationsParams,
   PositionVariationLineApiDto,
   PositionVariationsApiDto,
 } from "../types";
+
 export type UseVariationLinesOptions = {
   fen: string;
   fetchPositionVariations: (
@@ -17,12 +26,40 @@ export type UseVariationLinesOptions = {
 export function useVariationLines({
   fen,
   fetchPositionVariations,
-  lineCount = 8,
-  lineDepth = 4,
+  lineCount = EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+  lineDepth = EXPLORER_DEFAULT_VARIATION_DEPTH,
   enabled = true,
 }: UseVariationLinesOptions) {
-  const [lines, setLines] = useState<PositionVariationLineApiDto[]>([]);
-  const [loading, setLoading] = useState(false);
+  const cacheKey = useMemo(
+    () => variationsSessionKey(fen, lineCount, lineDepth),
+    [fen, lineCount, lineDepth],
+  );
+  const [lines, setLines] = useState<PositionVariationLineApiDto[]>(() => {
+    if (!enabled) {
+      return [];
+    }
+    return peekSessionVariations(cacheKey) ?? [];
+  });
+  const [loading, setLoading] = useState(() => {
+    if (!enabled) {
+      return false;
+    }
+    return peekSessionVariations(cacheKey) === undefined;
+  });
+
+  useEffect(() => {
+    return subscribeExplorerSessionCache(() => {
+      if (!enabled) {
+        return;
+      }
+      const cachedLines = peekSessionVariations(cacheKey);
+      if (!cachedLines) {
+        return;
+      }
+      setLines(cachedLines);
+      setLoading(false);
+    });
+  }, [enabled, cacheKey]);
 
   useEffect(() => {
     if (!enabled) {
@@ -32,9 +69,15 @@ export function useVariationLines({
     }
 
     let cancelled = false;
-    setLoading(true);
+    const cachedLines = peekSessionVariations(cacheKey);
+    if (cachedLines) {
+      setLines(cachedLines);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
 
-    (async () => {
+    void (async () => {
       try {
         const result = await fetchPositionVariations({
           fen,
@@ -44,7 +87,9 @@ export function useVariationLines({
         });
 
         if (cancelled) return;
-        setLines(result?.lines ?? []);
+        const nextLines = result?.lines ?? [];
+        setSessionVariations(cacheKey, nextLines);
+        setLines(nextLines);
       } catch {
         if (!cancelled) {
           setLines([]);
@@ -59,7 +104,7 @@ export function useVariationLines({
     return () => {
       cancelled = true;
     };
-  }, [enabled, fen, fetchPositionVariations, lineCount, lineDepth]);
+  }, [enabled, fen, fetchPositionVariations, lineCount, lineDepth, cacheKey]);
 
-  return { lines, loading };
+  return { lines, loading: enabled ? loading : false };
 }

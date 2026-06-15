@@ -1,4 +1,17 @@
 export { EXPLORER_START_FEN } from "./constants";
+export { seedExplorerStartSession } from "./seedExplorerStartSession";
+export {
+  EXPLORER_DEFAULT_VARIATION_DEPTH,
+  EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+  EXPLORER_PREFETCH_CHILD_COUNT,
+  gamesSessionKey,
+  peekSessionGames,
+  peekSessionVariations,
+  setSessionGames,
+  setSessionVariations,
+  subscribeExplorerSessionCache,
+  variationsSessionKey,
+} from "./explorerSessionCache";
 export {
   ExplorerPlaceholder,
   type ExplorerPlaceholderProps,
