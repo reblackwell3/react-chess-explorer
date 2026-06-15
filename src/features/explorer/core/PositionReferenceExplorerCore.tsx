@@ -1,7 +1,6 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChessboardDnDProvider } from "react-chessboard";
-import { HighlightChessboard, ThemeProvider, usePositionKeyboardNav } from "react-chess-core";
+import { ChessboardDnDProvider, HighlightChessboard, ThemeProvider, usePositionKeyboardNav } from "react-chess-core";
 import { DefaultReferencePanel } from "../defaults/DefaultReferencePanel";
 import {
   defaultRenderBoardNav,
@@ -171,7 +170,7 @@ export const PositionReferenceExplorerCore = ({
     width: "100%",
     height: fillHeight ? "100%" : "auto",
     minHeight: layoutMinHeight ?? DEFAULT_REFERENCE_LAYOUT.minHeight,
-    overflow: "hidden",
+    overflow: fillHeight ? "hidden" : "visible",
     boxSizing: "border-box",
   };
 
@@ -197,6 +196,7 @@ export const PositionReferenceExplorerCore = ({
   const referencePanel = (
     <DefaultReferencePanel
       theme={theme}
+      fillHeight={fillHeight}
       status={renderStatus({
         error,
         loading: showPositionLoading,

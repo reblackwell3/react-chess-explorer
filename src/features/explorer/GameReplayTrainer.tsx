@@ -1,6 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { ChessboardDnDProvider } from "react-chessboard";
-import { HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { ChessboardDnDProvider, HighlightChessboard, ThemeProvider } from "react-chess-core";
 import { DEFAULT_REFERENCE_LAYOUT } from "./referenceLayout";
 import { useGameReplayTraining } from "./hooks/useGameReplayTraining";
 import type { ExplorerGameReplayApiDto } from "./types";
