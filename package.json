@@ -1,6 +1,6 @@
 {
   "name": "react-chess-explorer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "React components for browsing and replaying chess games (depends on react-chess-core only)",
   "license": "MIT",
   "author": "Robert Blackwell",
@@ -28,7 +28,7 @@
   "peerDependencies": {
     "chess.js": "^1.0.0-beta.8",
     "react": "^18.3.1",
-    "react-chess-core": "^0.1.0",
+    "react-chess-core": "^0.1.1",
     "react-chessboard": "^4.7.1"
   },
   "devDependencies": {
@@ -50,7 +50,7 @@
     "@vitejs/plugin-react": "^4.3.1",
     "chess.js": "^1.0.0-beta.8",
     "react": "^18.3.1",
-    "react-chess-core": "^0.1.0",
+    "react-chess-core": "^0.1.1",
     "react-chessboard": "^4.7.1",
     "react-dom": "^18.3.1",
     "storybook": "^8.2.9",

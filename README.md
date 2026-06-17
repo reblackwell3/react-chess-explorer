@@ -7,6 +7,8 @@ npm run build
 
 React components for **browsing and replaying chess games**. This package depends on **`react-chess-core` only** (board + engine primitives), not `react-chess-puzzle-kit`.
 
+Used in production at [endchess.com](https://endchess.com).
+
 **Status:** Phase 5 scaffold — paste requirements into `docs/REQUIREMENTS.md` (or issue) before implementing replay UI.
 
 ---
