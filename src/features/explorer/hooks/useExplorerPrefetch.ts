@@ -61,49 +61,63 @@ export function useExplorerPrefetch({
       const sourcesParam =
         sources.length < ALL_GAME_SOURCES.length ? sources : undefined;
 
-      for (const move of moves.slice(0, childCount)) {
+      const prefetchMove = (move: PositionMoveApiDto) => {
         const childFen = fenAfterUci(fen, move.uci);
         if (!childFen) {
-          continue;
+          return Promise.resolve();
         }
 
         const gamesKey = gamesSessionKey({
           fen: childFen,
           sources: sourcesParam,
         });
-        if (!peekSessionGames(gamesKey)) {
-          void fetchPositionGames({ fen: childFen, sources: sourcesParam })
-            .then((games) => {
-              if (!cancelled) {
-                setSessionGames(gamesKey, games);
-              }
-            })
-            .catch(() => undefined);
-        }
+        const gamesPromise = peekSessionGames(gamesKey)
+          ? Promise.resolve()
+          : fetchPositionGames({ fen: childFen, sources: sourcesParam })
+              .then((games) => {
+                if (!cancelled) {
+                  setSessionGames(gamesKey, games);
+                }
+              })
+              .catch(() => undefined);
 
         if (!fetchPositionVariations) {
-          continue;
+          return gamesPromise;
         }
 
         const variationsKey = variationsSessionKey(childFen);
-        if (!peekSessionVariations(variationsKey)) {
-          void fetchPositionVariations({
-            fen: childFen,
-            mode: "variations",
-            lineCount: EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
-            depth: EXPLORER_DEFAULT_VARIATION_DEPTH,
-          })
-            .then((result) => {
-              if (!cancelled) {
-                setSessionVariations(
-                  variationsKey,
-                  result?.lines ?? [],
-                );
-              }
+        const variationsPromise = peekSessionVariations(variationsKey)
+          ? Promise.resolve()
+          : fetchPositionVariations({
+              fen: childFen,
+              mode: "variations",
+              lineCount: EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+              depth: EXPLORER_DEFAULT_VARIATION_DEPTH,
             })
-            .catch(() => undefined);
+              .then((result) => {
+                if (!cancelled) {
+                  setSessionVariations(
+                    variationsKey,
+                    result?.lines ?? [],
+                  );
+                }
+              })
+              .catch(() => undefined);
+
+        return Promise.all([gamesPromise, variationsPromise]).then(() => undefined);
+      };
+
+      void (async () => {
+        const movesToPrefetch = moves.slice(0, childCount);
+        for (let index = 0; index < movesToPrefetch.length; index += 2) {
+          if (cancelled) {
+            return;
+          }
+          await Promise.all(
+            movesToPrefetch.slice(index, index + 2).map(prefetchMove),
+          );
         }
-      }
+      })();
     };
 
     if (typeof window.requestIdleCallback === "function") {
