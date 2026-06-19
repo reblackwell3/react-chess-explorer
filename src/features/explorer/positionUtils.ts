@@ -47,6 +47,7 @@ export function applyBoardMove(
 export type LineSansEntry = {
   fen: string;
   lastSan: string;
+  lastUci: string;
 };
 
 /** Play a SAN sequence from a start FEN; returns null if any move is illegal. */
@@ -61,7 +62,8 @@ export function applyLineSans(
     try {
       const move = chess.move(san);
       if (!move) return null;
-      entries.push({ fen: chess.fen(), lastSan: move.san });
+      const lastUci = `${move.from}${move.to}${move.promotion ?? ""}`;
+      entries.push({ fen: chess.fen(), lastSan: move.san, lastUci });
     } catch {
       return null;
     }

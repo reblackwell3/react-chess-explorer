@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ExplorerGameReplayApiDto } from "../types";
+import { lastMoveUciAtPly } from "react-chess-core";
 import { fenAtPly, findPlyIndexForFen, uciFromDrop } from "../gameReplayUtils";
 
 export type GameReplayFeedback = "correct" | "incorrect" | null;
@@ -65,6 +66,10 @@ export function useGameReplayTraining({
   const complete = game ? plyIndex >= game.movesUci.length : false;
   const expectedUci = game?.movesUci[plyIndex];
   const expectedSan = game?.movesSan[plyIndex];
+  const lastMoveUci = useMemo(
+    () => (game ? lastMoveUciAtPly(game.movesUci, plyIndex) : null),
+    [game, plyIndex],
+  );
 
   const handlePieceDrop = useCallback(
     (sourceSquare: string, targetSquare: string, piece: string): boolean => {
@@ -104,6 +109,7 @@ export function useGameReplayTraining({
     error,
     feedback,
     lastExpectedSan,
+    lastMoveUci,
     expectedSan,
     handlePieceDrop,
     revealMove,

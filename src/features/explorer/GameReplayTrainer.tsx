@@ -57,6 +57,7 @@ export const GameReplayTrainer = ({
     error,
     feedback,
     lastExpectedSan,
+    lastMoveUci,
     handlePieceDrop,
     revealMove,
   } = useGameReplayTraining({ gameId, startFen, fetchGame });
@@ -129,6 +130,7 @@ export const GameReplayTrainer = ({
             checkSquare=""
             hintSquare={null}
             incorrectMoveSquare={null}
+            lastMoveUci={lastMoveUci}
             onPieceDrop={handlePieceDrop}
             promotionDialogVariant="modal"
           />

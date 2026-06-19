@@ -73,6 +73,7 @@ export const PositionReferenceExplorerCore = ({
     canGoForward,
     forwardSans,
     selectedVariationKey,
+    lastMoveUci,
     setSources,
     handleMoveSelect,
     handleLineSelect,
@@ -185,6 +186,7 @@ export const PositionReferenceExplorerCore = ({
           checkSquare=""
           hintSquare={null}
           incorrectMoveSquare={null}
+          lastMoveUci={lastMoveUci}
           onPieceDrop={handlePieceDrop}
           promotionDialogVariant="modal"
         />
