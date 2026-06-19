@@ -1,6 +1,6 @@
 {
   "name": "react-chess-explorer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "React components for browsing and replaying chess games (depends on react-chess-core only)",
   "license": "MIT",
   "author": "Robert Blackwell",
