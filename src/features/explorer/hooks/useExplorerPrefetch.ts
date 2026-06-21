@@ -33,6 +33,8 @@ export type UseExplorerPrefetchOptions = {
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
   childCount?: number;
+  gamesLimit?: number;
+  variationLineCount?: number;
 };
 
 export function useExplorerPrefetch({
@@ -43,6 +45,8 @@ export function useExplorerPrefetch({
   fetchPositionGames,
   fetchPositionVariations,
   childCount = EXPLORER_PREFETCH_CHILD_COUNT,
+  gamesLimit,
+  variationLineCount = EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
 }: UseExplorerPrefetchOptions): void {
   useEffect(() => {
     if (!positionReady || moves.length === 0) {
@@ -70,9 +74,14 @@ export function useExplorerPrefetch({
         const gamesKey = gamesSessionKey({
           fen: childFen,
           sources: sourcesParam,
+          ...(gamesLimit != null ? { limit: gamesLimit } : {}),
         });
         if (!peekSessionGames(gamesKey)) {
-          void fetchPositionGames({ fen: childFen, sources: sourcesParam })
+          void fetchPositionGames({
+            fen: childFen,
+            sources: sourcesParam,
+            ...(gamesLimit != null ? { limit: gamesLimit } : {}),
+          })
             .then((games) => {
               if (!cancelled) {
                 setSessionGames(gamesKey, games);
@@ -85,12 +94,16 @@ export function useExplorerPrefetch({
           continue;
         }
 
-        const variationsKey = variationsSessionKey(childFen);
+        const variationsKey = variationsSessionKey(
+          childFen,
+          variationLineCount,
+          EXPLORER_DEFAULT_VARIATION_DEPTH,
+        );
         if (!peekSessionVariations(variationsKey)) {
           void fetchPositionVariations({
             fen: childFen,
             mode: "variations",
-            lineCount: EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+            lineCount: variationLineCount,
             depth: EXPLORER_DEFAULT_VARIATION_DEPTH,
           })
             .then((result) => {
@@ -131,5 +144,7 @@ export function useExplorerPrefetch({
     fetchPositionGames,
     fetchPositionVariations,
     childCount,
+    gamesLimit,
+    variationLineCount,
   ]);
 }

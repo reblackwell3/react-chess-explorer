@@ -47,7 +47,13 @@ export const PositionReferenceExplorerCore = ({
   renderBoardNav = defaultRenderBoardNav,
   onGameSelect,
   keyboardNav = true,
+  moveLimit,
+  variationLineCount,
+  gamesLimit,
 }: PositionReferenceExplorerCoreProps) => {
+  const resolvedVariationLineCount =
+    variationLineCount ?? EXPLORER_DEFAULT_VARIATION_LINE_COUNT;
+
   const referenceData = usePositionReferenceData({
     fenProp,
     onFenChange,
@@ -56,6 +62,8 @@ export const PositionReferenceExplorerCore = ({
     fetchPosition,
     fetchPositionGames,
     fetchPositionVariations,
+    gamesLimit,
+    variationLineCount: resolvedVariationLineCount,
   });
   const {
     fen,
@@ -104,7 +112,7 @@ export const PositionReferenceExplorerCore = ({
     const cachedVariations = peekSessionVariations(
       variationsSessionKey(
         fen,
-        EXPLORER_DEFAULT_VARIATION_LINE_COUNT,
+        resolvedVariationLineCount,
         EXPLORER_DEFAULT_VARIATION_DEPTH,
       ),
     );
@@ -124,12 +132,13 @@ export const PositionReferenceExplorerCore = ({
     }
 
     setVariationsEnabled(true);
-  }, [fen, positionReady, loading, isStartPosition]);
+  }, [fen, positionReady, loading, isStartPosition, resolvedVariationLineCount]);
 
   const { lines: variationLines, loading: variationLinesLoading } =
     useVariationLines({
       fen,
       fetchPositionVariations,
+      lineCount: resolvedVariationLineCount,
       enabled:
         variationsEnabled && (positionReady || isStartPosition),
     });
@@ -202,7 +211,10 @@ export const PositionReferenceExplorerCore = ({
       loading: showPositionLoading,
     }),
     moveStats: renderMoveStats({
-      moves: displayMoves,
+      moves:
+        moveLimit != null && moveLimit >= 0
+          ? displayMoves.slice(0, moveLimit)
+          : displayMoves,
       onMoveSelect: handleMoveSelect,
     }),
     variationsStrip: renderVariationsStrip({

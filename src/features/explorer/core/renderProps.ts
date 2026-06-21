@@ -118,4 +118,10 @@ export type PositionReferenceExplorerCoreProps = {
    * Default true.
    */
   keyboardNav?: boolean;
+  /** Cap move-stat rows shown in the reference panel (API may return more). */
+  moveLimit?: number;
+  /** Variation lines to fetch and display. Defaults to library default (8). */
+  variationLineCount?: number;
+  /** Games page size for the reference panel list. Defaults to 50. */
+  gamesLimit?: number;
 };
