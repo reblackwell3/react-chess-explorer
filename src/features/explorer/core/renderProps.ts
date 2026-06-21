@@ -19,6 +19,15 @@ export type ReferenceLayoutRenderProps = {
   referencePanel: ReactNode;
 };
 
+export type ReferencePanelRenderProps = {
+  theme: "light" | "dark";
+  fillHeight?: boolean;
+  status: ReactNode;
+  moveStats: ReactNode;
+  variationsStrip: ReactNode;
+  gamesPanel: ReactNode;
+};
+
 export type BoardOrientation = "white" | "black";
 
 export type BoardNavRenderProps = {
@@ -95,6 +104,8 @@ export type PositionReferenceExplorerCoreProps = {
   fillHeight?: boolean;
   layoutMinHeight?: string;
   renderLayout?: (props: ReferenceLayoutRenderProps) => ReactNode;
+  /** Replaces {@link DefaultReferencePanel} when set (e.g. tabbed mobile layout). */
+  renderReferencePanel?: (props: ReferencePanelRenderProps) => ReactNode;
   renderStatus?: (props: ExplorerStatusRenderProps) => ReactNode;
   renderMoveStats?: (props: MoveStatsRenderProps) => ReactNode;
   renderVariationsStrip?: (props: VariationsStripRenderProps) => ReactNode;

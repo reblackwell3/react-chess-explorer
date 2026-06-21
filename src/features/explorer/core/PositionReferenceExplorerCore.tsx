@@ -39,6 +39,7 @@ export const PositionReferenceExplorerCore = ({
   fillHeight = true,
   layoutMinHeight,
   renderLayout = defaultRenderLayout,
+  renderReferencePanel,
   renderStatus = defaultRenderStatus,
   renderMoveStats = defaultRenderMoveStats,
   renderVariationsStrip = defaultRenderVariationsStrip,
@@ -193,37 +194,39 @@ export const PositionReferenceExplorerCore = ({
     </>
   );
 
-  const referencePanel = (
-    <DefaultReferencePanel
-      theme={theme}
-      fillHeight={fillHeight}
-      status={renderStatus({
-        error,
-        loading: showPositionLoading,
-      })}
-      moveStats={renderMoveStats({
-        moves: displayMoves,
-        onMoveSelect: handleMoveSelect,
-      })}
-      variationsStrip={renderVariationsStrip({
-        theme,
-        lines: variationLines,
-        loading: !variationsEnabled || variationLinesLoading,
-        selectedLineKey: selectedVariationKey,
-        forwardSans,
-        onLineSelect: handleLineSelect,
-      })}
-      gamesPanel={renderGamesPanel({
-        games: Array.isArray(games?.games) ? games.games : [],
-        loading: gamesLoading,
-        lineLabel,
-        lineSans,
-        sources,
-        onSourcesChange: setSources,
-        onGameSelect,
-      })}
-    />
-  );
+  const referencePanelProps = {
+    theme,
+    fillHeight,
+    status: renderStatus({
+      error,
+      loading: showPositionLoading,
+    }),
+    moveStats: renderMoveStats({
+      moves: displayMoves,
+      onMoveSelect: handleMoveSelect,
+    }),
+    variationsStrip: renderVariationsStrip({
+      theme,
+      lines: variationLines,
+      loading: !variationsEnabled || variationLinesLoading,
+      selectedLineKey: selectedVariationKey,
+      forwardSans,
+      onLineSelect: handleLineSelect,
+    }),
+    gamesPanel: renderGamesPanel({
+      games: Array.isArray(games?.games) ? games.games : [],
+      loading: gamesLoading,
+      lineLabel,
+      lineSans,
+      sources,
+      onSourcesChange: setSources,
+      onGameSelect,
+    }),
+  };
+
+  const referencePanel = renderReferencePanel
+    ? renderReferencePanel(referencePanelProps)
+    : <DefaultReferencePanel {...referencePanelProps} />;
 
   return (
     <ThemeProvider theme={theme} boardTheme={boardTheme}>

@@ -24,6 +24,7 @@ export { PositionReferenceExplorerCore } from "./core/PositionReferenceExplorerC
 export type {
   PositionReferenceExplorerCoreProps,
   ReferenceLayoutRenderProps,
+  ReferencePanelRenderProps,
   ExplorerStatusRenderProps,
   MoveStatsRenderProps,
   GamesPanelRenderProps,
