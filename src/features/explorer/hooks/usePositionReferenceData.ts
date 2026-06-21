@@ -43,8 +43,6 @@ export type UsePositionReferenceDataOptions = {
   fetchPositionVariations?: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
-  gamesLimit?: number;
-  variationLineCount?: number;
 };
 
 export function usePositionReferenceData({
@@ -55,8 +53,6 @@ export function usePositionReferenceData({
   fetchPosition,
   fetchPositionGames,
   fetchPositionVariations,
-  gamesLimit,
-  variationLineCount,
 }: UsePositionReferenceDataOptions) {
   const initialFen = fenProp ?? EXPLORER_START_FEN;
   const bootstrappedRef = useRef(
@@ -179,9 +175,8 @@ export function usePositionReferenceData({
         uci,
         sources:
           sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
-        ...(gamesLimit != null ? { limit: gamesLimit } : {}),
       }),
-    [sources, gamesLimit],
+    [sources],
   );
 
   const lastAppliedLineKeyRef = useRef(initialLineKey);
@@ -339,8 +334,6 @@ export function usePositionReferenceData({
     sources,
     fetchPositionGames,
     fetchPositionVariations,
-    gamesLimit,
-    variationLineCount,
   });
 
   useEffect(() => {
@@ -377,7 +370,6 @@ export function usePositionReferenceData({
           uci: gamesMoveFilterUci,
           sources:
             sources.length < ALL_GAME_SOURCES.length ? sources : undefined,
-          ...(gamesLimit != null ? { limit: gamesLimit } : {}),
         });
         if (cancelled) return;
         setSessionGames(requestedKey, gameList);
@@ -402,7 +394,6 @@ export function usePositionReferenceData({
     sources,
     fetchPositionGames,
     gamesCacheKey,
-    gamesLimit,
   ]);
 
   const handleMoveSelect = useCallback(
