@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { ExplorerGameReplayApiDto } from "../types";
+import {
+  lastMoveUciAtPly,
+  useCorrectMoveFeedback,
+  useIncorrectMoveFeedback,
+} from "react-chess-core";
 import { fenAtPly, findPlyIndexForFen, uciFromDrop } from "../gameReplayUtils";
 
 export type GameReplayFeedback = "correct" | "incorrect" | null;
@@ -22,6 +27,18 @@ export function useGameReplayTraining({
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<GameReplayFeedback>(null);
   const [lastExpectedSan, setLastExpectedSan] = useState<string | null>(null);
+  const {
+    correctMoveSquare,
+    showCorrectMove,
+    clearCorrectMoveFeedback,
+    isShowingCorrectMove,
+  } = useCorrectMoveFeedback();
+  const {
+    incorrectMoveSquare,
+    showIncorrectMove,
+    clearIncorrectMoveFeedback,
+    isShowingIncorrectMove,
+  } = useIncorrectMoveFeedback();
 
   useEffect(() => {
     let cancelled = false;
@@ -29,6 +46,8 @@ export function useGameReplayTraining({
     setError(null);
     setFeedback(null);
     setLastExpectedSan(null);
+    clearCorrectMoveFeedback();
+    clearIncorrectMoveFeedback();
 
     (async () => {
       try {
@@ -55,7 +74,7 @@ export function useGameReplayTraining({
     return () => {
       cancelled = true;
     };
-  }, [gameId, startFen, fetchGame]);
+  }, [gameId, startFen, fetchGame, clearCorrectMoveFeedback, clearIncorrectMoveFeedback]);
 
   const fen = useMemo(() => {
     if (!game) return startFen;
@@ -65,26 +84,52 @@ export function useGameReplayTraining({
   const complete = game ? plyIndex >= game.movesUci.length : false;
   const expectedUci = game?.movesUci[plyIndex];
   const expectedSan = game?.movesSan[plyIndex];
+  const lastMoveUci = useMemo(
+    () => (game ? lastMoveUciAtPly(game.movesUci, plyIndex) : null),
+    [game, plyIndex],
+  );
 
   const handlePieceDrop = useCallback(
     (sourceSquare: string, targetSquare: string, piece: string): boolean => {
-      if (!game || complete || !expectedUci) return false;
+      if (
+        !game ||
+        complete ||
+        !expectedUci ||
+        isShowingCorrectMove ||
+        isShowingIncorrectMove
+      ) {
+        return false;
+      }
 
       const uci = uciFromDrop(fen, sourceSquare, targetSquare, piece);
       if (!uci) return false;
 
       if (uci === expectedUci) {
         setFeedback("correct");
-        setPlyIndex((p) => p + 1);
         setLastExpectedSan(null);
+        showCorrectMove(targetSquare, () => {
+          setFeedback(null);
+          setPlyIndex((p) => p + 1);
+        });
         return true;
       }
 
       setFeedback("incorrect");
       setLastExpectedSan(expectedSan ?? null);
+      showIncorrectMove(sourceSquare);
       return false;
     },
-    [game, complete, expectedUci, expectedSan, fen],
+    [
+      game,
+      complete,
+      expectedUci,
+      expectedSan,
+      fen,
+      isShowingCorrectMove,
+      isShowingIncorrectMove,
+      showCorrectMove,
+      showIncorrectMove,
+    ],
   );
 
   const revealMove = useCallback(() => {
@@ -104,6 +149,9 @@ export function useGameReplayTraining({
     error,
     feedback,
     lastExpectedSan,
+    lastMoveUci,
+    correctMoveSquare,
+    incorrectMoveSquare,
     expectedSan,
     handlePieceDrop,
     revealMove,

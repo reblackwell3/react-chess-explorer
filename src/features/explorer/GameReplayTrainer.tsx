@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import { ChessboardDnDProvider, HighlightChessboard, ThemeProvider } from "react-chess-core";
+import { HighlightChessboard, ThemeProvider } from "react-chess-core";
 import { DEFAULT_REFERENCE_LAYOUT } from "./referenceLayout";
 import { useGameReplayTraining } from "./hooks/useGameReplayTraining";
 import type { ExplorerGameReplayApiDto } from "./types";
@@ -57,6 +57,9 @@ export const GameReplayTrainer = ({
     error,
     feedback,
     lastExpectedSan,
+    lastMoveUci,
+    correctMoveSquare,
+    incorrectMoveSquare,
     handlePieceDrop,
     revealMove,
   } = useGameReplayTraining({ gameId, startFen, fetchGame });
@@ -122,17 +125,20 @@ export const GameReplayTrainer = ({
           </div>
         )}
 
-        <ChessboardDnDProvider>
-          <HighlightChessboard
-            boardWidth={boardWidth}
-            position={fen}
-            checkSquare=""
-            hintSquare={null}
-            incorrectMoveSquare={null}
-            onPieceDrop={handlePieceDrop}
-            promotionDialogVariant="modal"
-          />
-        </ChessboardDnDProvider>
+        <HighlightChessboard
+          boardWidth={boardWidth}
+          position={fen}
+          checkSquare=""
+          hintSquare={null}
+          incorrectMoveSquare={incorrectMoveSquare}
+          correctMoveSquare={correctMoveSquare}
+          lastMoveUci={lastMoveUci}
+          arePiecesDraggable={
+            !complete && !loading && !error && !correctMoveSquare && !incorrectMoveSquare
+          }
+          onPieceDrop={handlePieceDrop}
+          promotionDialogVariant="modal"
+        />
 
         {!complete && !loading && !error && (
           <button type="button" style={defaultButtonStyle} onClick={revealMove}>

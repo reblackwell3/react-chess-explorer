@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ChessboardDnDProvider, HighlightChessboard, ThemeProvider, usePositionKeyboardNav } from "react-chess-core";
+import { HighlightChessboard, ThemeProvider, usePositionKeyboardNav } from "react-chess-core";
 import { DefaultReferencePanel } from "../defaults/DefaultReferencePanel";
 import {
   defaultRenderBoardNav,
@@ -74,6 +74,7 @@ export const PositionReferenceExplorerCore = ({
     canGoForward,
     forwardSans,
     selectedVariationKey,
+    lastMoveUci,
     setSources,
     handleMoveSelect,
     handleLineSelect,
@@ -177,19 +178,18 @@ export const PositionReferenceExplorerCore = ({
 
   const board = (
     <>
-      <ChessboardDnDProvider>
-        <HighlightChessboard
-          key={boardOrientation}
-          boardWidth={boardWidth}
-          position={boardFen}
-          boardOrientation={boardOrientation}
-          checkSquare=""
-          hintSquare={null}
-          incorrectMoveSquare={null}
-          onPieceDrop={handlePieceDrop}
-          promotionDialogVariant="modal"
-        />
-      </ChessboardDnDProvider>
+      <HighlightChessboard
+        key={boardOrientation}
+        boardWidth={boardWidth}
+        position={boardFen}
+        boardOrientation={boardOrientation}
+        checkSquare=""
+        hintSquare={null}
+        incorrectMoveSquare={null}
+        lastMoveUci={lastMoveUci}
+        onPieceDrop={handlePieceDrop}
+        promotionDialogVariant="modal"
+      />
       {renderBoardNav(boardNavProps)}
     </>
   );

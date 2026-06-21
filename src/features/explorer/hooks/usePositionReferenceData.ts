@@ -122,6 +122,7 @@ export function usePositionReferenceData({
     goFirst,
     goLast,
     resetHistory,
+    lastMoveUci: historyLastMoveUci,
   } = usePositionHistory(initialFen, initialLineSans);
 
   /** FEN used for explorer API queries — follows move history, not animation frames. */
@@ -182,6 +183,11 @@ export function usePositionReferenceData({
   const lastAppliedLineKeyRef = useRef(initialLineKey);
 
   useEffect(() => () => cancelVariationAnimation(), [cancelVariationAnimation]);
+
+  // Hold URL line callbacks until history catches up after an external line change.
+  useEffect(() => {
+    readyForLineSyncRef.current = false;
+  }, [initialLineKey]);
 
   // Apply URL line changes only when the external line key changes — not when the
   // user clicks moves (internal lineSans updates must not re-sync from stale props).
@@ -405,7 +411,7 @@ export function usePositionReferenceData({
       }
       const nextFen = fenAfterUci(queryFen, move.uci);
       if (!nextFen) return;
-      pushEntry(nextFen, move.san);
+      pushEntry(nextFen, move.san, move.uci);
       setSelectedVariationKey(undefined);
       applyNavigation(nextFen, true);
     },
@@ -419,12 +425,16 @@ export function usePositionReferenceData({
       cancelVariationAnimation();
 
       let lineFen = queryFen;
-      const entries: { fen: string; lastSan: string }[] = [];
+      const entries: { fen: string; lastSan: string; lastUci: string }[] = [];
 
       for (let i = 0; i < line.uciPath.length; i += 1) {
         const nextFen = fenAfterUci(lineFen, line.uciPath[i]);
         if (!nextFen) return;
-        entries.push({ fen: nextFen, lastSan: line.moves[i].san });
+        entries.push({
+          fen: nextFen,
+          lastSan: line.moves[i].san,
+          lastUci: line.uciPath[i],
+        });
         lineFen = nextFen;
       }
 
@@ -469,7 +479,7 @@ export function usePositionReferenceData({
       }
       const result = applyBoardMove(queryFen, sourceSquare, targetSquare, piece);
       if (!result) return false;
-      pushEntry(result.fen, result.san);
+      pushEntry(result.fen, result.san, result.uci);
       setSelectedVariationKey(undefined);
       applyNavigation(result.fen, true);
       return true;
@@ -550,6 +560,7 @@ export function usePositionReferenceData({
     canGoForward,
     forwardSans,
     selectedVariationKey,
+    lastMoveUci: historyLastMoveUci,
     setSources,
     setGamesMoveFilterUci,
     handleMoveSelect,
