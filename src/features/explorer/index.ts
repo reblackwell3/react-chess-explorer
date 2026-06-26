@@ -1,4 +1,7 @@
 export { EXPLORER_START_FEN } from "./constants";
+export {
+  DEFAULT_EXPLORER_PREFETCH_ENABLED,
+} from "./explorerPrefetchConfig";
 export { seedExplorerStartSession } from "./seedExplorerStartSession";
 export {
   EXPLORER_DEFAULT_VARIATION_DEPTH,

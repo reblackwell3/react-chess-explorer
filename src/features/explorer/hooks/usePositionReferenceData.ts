@@ -43,6 +43,8 @@ export type UsePositionReferenceDataOptions = {
   fetchPositionVariations?: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
+  /** When false, skip idle prefetch of child positions. Default false. */
+  prefetchEnabled?: boolean;
 };
 
 export function usePositionReferenceData({
@@ -53,6 +55,7 @@ export function usePositionReferenceData({
   fetchPosition,
   fetchPositionGames,
   fetchPositionVariations,
+  prefetchEnabled,
 }: UsePositionReferenceDataOptions) {
   const initialFen = fenProp ?? EXPLORER_START_FEN;
   const bootstrappedRef = useRef(
@@ -340,6 +343,7 @@ export function usePositionReferenceData({
     sources,
     fetchPositionGames,
     fetchPositionVariations,
+    enabled: prefetchEnabled,
   });
 
   useEffect(() => {

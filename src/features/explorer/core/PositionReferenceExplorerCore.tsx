@@ -47,6 +47,7 @@ export const PositionReferenceExplorerCore = ({
   renderBoardNav = defaultRenderBoardNav,
   onGameSelect,
   keyboardNav = true,
+  prefetchEnabled = false,
 }: PositionReferenceExplorerCoreProps) => {
   const referenceData = usePositionReferenceData({
     fenProp,
@@ -56,6 +57,7 @@ export const PositionReferenceExplorerCore = ({
     fetchPosition,
     fetchPositionGames,
     fetchPositionVariations,
+    prefetchEnabled,
   });
   const {
     fen,

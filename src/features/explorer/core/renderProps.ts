@@ -118,4 +118,9 @@ export type PositionReferenceExplorerCoreProps = {
    * Default true.
    */
   keyboardNav?: boolean;
+  /**
+   * Idle prefetch of games/variations for top child moves. Default false.
+   * Host apps typically wire this from `REACT_APP_EXPLORER_PREFETCH=1`.
+   */
+  prefetchEnabled?: boolean;
 };

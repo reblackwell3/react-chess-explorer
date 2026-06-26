@@ -20,6 +20,7 @@ import type {
   PositionVariationsApiDto,
 } from "../types";
 import { ALL_GAME_SOURCES } from "../types";
+import { DEFAULT_EXPLORER_PREFETCH_ENABLED } from "../explorerPrefetchConfig";
 
 export type UseExplorerPrefetchOptions = {
   fen: string;
@@ -32,6 +33,8 @@ export type UseExplorerPrefetchOptions = {
   fetchPositionVariations?: (
     params: FetchPositionVariationsParams,
   ) => Promise<PositionVariationsApiDto | null>;
+  /** When false, skip idle prefetch of child positions. Default false. */
+  enabled?: boolean;
   childCount?: number;
 };
 
@@ -42,10 +45,13 @@ export function useExplorerPrefetch({
   sources,
   fetchPositionGames,
   fetchPositionVariations,
+  enabled = DEFAULT_EXPLORER_PREFETCH_ENABLED,
   childCount = EXPLORER_PREFETCH_CHILD_COUNT,
 }: UseExplorerPrefetchOptions): void {
+  const prefetchOn = enabled === true;
+
   useEffect(() => {
-    if (!positionReady || moves.length === 0) {
+    if (!prefetchOn || !positionReady || moves.length === 0) {
       return;
     }
 
@@ -138,6 +144,7 @@ export function useExplorerPrefetch({
       }
     };
   }, [
+    prefetchOn,
     fen,
     moves,
     positionReady,
