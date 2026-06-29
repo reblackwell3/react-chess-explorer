@@ -38,6 +38,7 @@ const defaultButtonStyle: CSSProperties = {
   cursor: "pointer",
 };
 
+/** @deprecated Prefer host-app replay training; kept for Storybook compatibility. */
 export const GameReplayTrainer = ({
   gameId,
   startFen,
@@ -105,18 +106,6 @@ export const GameReplayTrainer = ({
             {loading && "Loading game…"}
             {error && <span style={{ color: "#c62828" }}>{error}</span>}
             {!loading && !error && complete && "Game complete."}
-            {!loading && !error && !complete && feedback === "correct" && (
-              <span style={{ color: "#2e7d32" }}>Correct!</span>
-            )}
-            {!loading &&
-              !error &&
-              !complete &&
-              feedback === "incorrect" &&
-              lastExpectedSan && (
-                <span style={{ color: "#ef6c00" }}>
-                  Expected {lastExpectedSan}
-                </span>
-              )}
             {!loading && !error && !complete && feedback === null && (
               <span>
                 Guess move {plyIndex + 1} of {totalPlies}
