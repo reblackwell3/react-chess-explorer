@@ -226,7 +226,7 @@ const resolveHost = (
         </Box>
       ) : null),
   useViewedGameIds: props.useViewedGameIds ?? (() => new Set()),
-  selectableRowSx: props.selectableRowSx,
+  selectableRowSx: props.selectableRowSx ?? {},
   seenColumnCellSx: props.seenColumnCellSx ?? {},
   wrappedGameTableSx: props.wrappedGameTableSx ?? {},
   wrappedGameRowLine1Sx: props.wrappedGameRowLine1Sx ?? { display: 'flex', gap: 1 },
