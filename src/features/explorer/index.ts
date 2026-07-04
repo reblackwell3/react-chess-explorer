@@ -49,6 +49,7 @@ export {
 } from "./defaults";
 export type { ReferenceLayoutConfig } from "./referenceLayout";
 export {
+  /** @deprecated Prefer host-app replay training; kept for Storybook compatibility. */
   GameReplayTrainer,
   type GameReplayTrainerProps,
 } from "./GameReplayTrainer";
@@ -81,3 +82,16 @@ export {
 } from "./positionUtils";
 export { isVariationLineActive } from "./variationLines";
 export { findPlyIndexForFen, fenAtPly } from "./gameReplayUtils";
+export {
+  EXPLORER_BOARD_WIDTH,
+  explorerLayoutMinHeight,
+  ExplorerLayout,
+  renderExplorerBoardNav,
+  renderExplorerStatus,
+  renderExplorerMoveStats,
+  renderExplorerVariationsStrip,
+  ExplorerGamesPanel,
+  renderExplorerGamesPanel,
+  type ExplorerGamesPanelRenderProps,
+  type ExplorerGamesPanelHostProps,
+} from "./mui";
