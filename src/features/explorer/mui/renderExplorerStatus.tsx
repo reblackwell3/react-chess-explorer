@@ -9,7 +9,7 @@ export const renderExplorerStatus = ({
   if (!error && !loading) return null;
 
   return (
-    <Box sx={{ px: 1.25, py: 0.5, flex: '0 0 auto' }}>
+    <Box sx={{ px: 1.25, py: 0.5, flex: '0 0 auto', minHeight: 36 }}>
       {error && (
         <Alert severity="warning" sx={{ py: 0, ...explorerPanelTextSx }}>
           {error}

@@ -14,6 +14,10 @@ import {
   fitTabletStackedExplorerBoardWidth,
   stackedExplorerSlotHeightCap,
 } from './fitExplorerBoardWidth';
+import { useStackedExplorerMainScrollPreserve } from './useStackedExplorerMainScrollPreserve';
+
+const VIEWPORT_RESIZE_DEBOUNCE_MS = 100;
+const BOARD_WIDTH_CHANGE_THRESHOLD_PX = 1;
 
 type ExplorerLayoutProps = ReferenceLayoutRenderProps & {
   onBoardWidthChange: (width: number) => void;
@@ -36,6 +40,27 @@ export const ExplorerLayout = ({
   const gridRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const boardStackRef = useRef<HTMLDivElement>(null);
+  const lastBoardWidthRef = useRef<number | null>(null);
+  const viewportResizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const captureMainScroll = useStackedExplorerMainScrollPreserve(isStacked);
+
+  const publishBoardWidth = useCallback(
+    (width: number) => {
+      const rounded = Math.round(width);
+      if (
+        lastBoardWidthRef.current !== null &&
+        Math.abs(lastBoardWidthRef.current - rounded) <=
+          BOARD_WIDTH_CHANGE_THRESHOLD_PX
+      ) {
+        return;
+      }
+      lastBoardWidthRef.current = rounded;
+      onBoardWidthChange(rounded);
+    },
+    [onBoardWidthChange],
+  );
 
   const updateBoardWidth = useCallback(() => {
     const slot = slotRef.current;
@@ -56,14 +81,14 @@ export const ExplorerLayout = ({
     const navHeight = navEl?.getBoundingClientRect().height ?? 0;
 
     if (isMobile) {
-      onBoardWidthChange(
+      publishBoardWidth(
         fitStackedExplorerBoardWidth(slotRect.width, navHeight, maxBoardWidth),
       );
       return;
     }
 
     if (isTabletStacked) {
-      onBoardWidthChange(
+      publishBoardWidth(
         fitTabletStackedExplorerBoardWidth(slotRect.width, navHeight),
       );
       return;
@@ -73,7 +98,7 @@ export const ExplorerLayout = ({
       ? stackedExplorerSlotHeightCap(viewportHeight)
       : slotRect.height;
 
-    onBoardWidthChange(
+    publishBoardWidth(
       fitExplorerBoardWidth(
         slotRect.width,
         slotHeightForFit,
@@ -81,7 +106,13 @@ export const ExplorerLayout = ({
         isStacked ? maxBoardWidth : slotRect.width,
       ),
     );
-  }, [isMobile, isStacked, isTabletStacked, maxBoardWidth, onBoardWidthChange]);
+  }, [
+    isMobile,
+    isStacked,
+    isTabletStacked,
+    maxBoardWidth,
+    publishBoardWidth,
+  ]);
 
   useLayoutEffect(() => {
     const slot = slotRef.current;
@@ -100,20 +131,36 @@ export const ExplorerLayout = ({
       observer.observe(boardStackRef.current);
     }
 
-    const onViewportChange = () => updateBoardWidth();
+    const onViewportChange = () => {
+      if (viewportResizeTimerRef.current) {
+        clearTimeout(viewportResizeTimerRef.current);
+      }
+      viewportResizeTimerRef.current = setTimeout(() => {
+        viewportResizeTimerRef.current = null;
+        updateBoardWidth();
+      }, VIEWPORT_RESIZE_DEBOUNCE_MS);
+    };
     window.addEventListener('resize', onViewportChange);
-    window.visualViewport?.addEventListener('resize', onViewportChange);
+    if (!isMobile) {
+      window.visualViewport?.addEventListener('resize', onViewportChange);
+    }
 
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', onViewportChange);
-      window.visualViewport?.removeEventListener('resize', onViewportChange);
+      if (!isMobile) {
+        window.visualViewport?.removeEventListener('resize', onViewportChange);
+      }
+      if (viewportResizeTimerRef.current) {
+        clearTimeout(viewportResizeTimerRef.current);
+      }
     };
-  }, [updateBoardWidth]);
+  }, [isMobile, updateBoardWidth]);
 
   return (
     <Box
       ref={gridRef}
+      onPointerDownCapture={isStacked ? captureMainScroll : undefined}
       sx={{
         display: 'grid',
         gridTemplateColumns: EXPLORER_GRID_COLUMNS,
@@ -150,6 +197,7 @@ export const ExplorerLayout = ({
             width: 'fit-content',
             maxWidth: '100%',
             mx: 'auto',
+            ...(isMobile && isStacked ? { touchAction: 'none' } : {}),
           }}
         >
           {board}

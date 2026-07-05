@@ -204,6 +204,11 @@ export const explorerVariationsScrollSx: SxProps<Theme> = {
 };
 
 /** Tabbed reference panel (mobile / tablet): grow with content, no nested scroll clip. */
+export const stackedExplorerMoveStatsScrollSx: SxProps<Theme> = {
+  overflow: 'visible',
+};
+
+/** Tabbed reference panel (mobile / tablet): grow with content, no nested scroll clip. */
 export const stackedExplorerVariationsScrollSx: SxProps<Theme> = {
   overflow: 'visible',
 };
