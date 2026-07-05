@@ -219,14 +219,13 @@ const resolveHost = (
     props.formatGameSource ?? ((source) => formatExplorerCell(source)),
   renderSourceFilter:
     props.renderSourceFilter ??
-    (({ sources, onSourcesChange }) =>
-      onSourcesChange ? (
-        <Box component="span" sx={{ color: 'text.secondary' }}>
-          Sources: {sources.join(', ')}
-        </Box>
-      ) : null),
+    (({ sources }) => (
+      <Box component="span" sx={{ color: 'text.secondary' }}>
+        Sources: {sources.join(', ')}
+      </Box>
+    )),
   useViewedGameIds: props.useViewedGameIds ?? (() => new Set()),
-  selectableRowSx: props.selectableRowSx,
+  selectableRowSx: props.selectableRowSx ?? {},
   seenColumnCellSx: props.seenColumnCellSx ?? {},
   wrappedGameTableSx: props.wrappedGameTableSx ?? {},
   wrappedGameRowLine1Sx: props.wrappedGameRowLine1Sx ?? { display: 'flex', gap: 1 },
