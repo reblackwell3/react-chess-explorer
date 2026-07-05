@@ -30,6 +30,7 @@ import {
   initialHistoryState,
   usePositionHistory,
 } from "./usePositionHistory";
+import { captureStackedExplorerBoardScroll } from "../mui/stackedExplorerScrollAnchor";
 
 export type UsePositionReferenceDataOptions = {
   fenProp?: string;
@@ -148,6 +149,7 @@ export function usePositionReferenceData({
 
   const applyNavigation = useCallback(
     (nextFen: string, clearMoveFilter = true) => {
+      captureStackedExplorerBoardScroll();
       setFen(nextFen);
       setBoardFen(nextFen);
       if (clearMoveFilter) {

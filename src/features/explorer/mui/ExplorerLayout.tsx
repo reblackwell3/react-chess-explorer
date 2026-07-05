@@ -6,7 +6,6 @@ import { panelBorderSx } from './explorerMuiStyles';
 import {
   EXPLORER_BOARD_WIDTH,
   EXPLORER_GRID_COLUMNS,
-  explorerLayoutMinHeight,
 } from './explorerLayoutConstants';
 import {
   fitExplorerBoardWidth,
@@ -41,6 +40,7 @@ export const ExplorerLayout = ({
   const slotRef = useRef<HTMLDivElement>(null);
   const boardStackRef = useRef<HTMLDivElement>(null);
   const lastBoardWidthRef = useRef<number | null>(null);
+  const mobileBoardWidthLockedRef = useRef(false);
   const viewportResizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -81,9 +81,13 @@ export const ExplorerLayout = ({
     const navHeight = navEl?.getBoundingClientRect().height ?? 0;
 
     if (isMobile) {
+      if (mobileBoardWidthLockedRef.current) {
+        return;
+      }
       publishBoardWidth(
         fitStackedExplorerBoardWidth(slotRect.width, navHeight, maxBoardWidth),
       );
+      mobileBoardWidthLockedRef.current = true;
       return;
     }
 
@@ -115,6 +119,12 @@ export const ExplorerLayout = ({
   ]);
 
   useLayoutEffect(() => {
+    if (!isMobile) {
+      mobileBoardWidthLockedRef.current = false;
+    }
+  }, [isMobile]);
+
+  useLayoutEffect(() => {
     const slot = slotRef.current;
     if (!slot) {
       return;
@@ -124,7 +134,7 @@ export const ExplorerLayout = ({
 
     const observer = new ResizeObserver(updateBoardWidth);
     observer.observe(slot);
-    if (gridRef.current) {
+    if (!isStacked && gridRef.current) {
       observer.observe(gridRef.current);
     }
     if (boardStackRef.current) {
@@ -132,6 +142,9 @@ export const ExplorerLayout = ({
     }
 
     const onViewportChange = () => {
+      if (isMobile) {
+        mobileBoardWidthLockedRef.current = false;
+      }
       if (viewportResizeTimerRef.current) {
         clearTimeout(viewportResizeTimerRef.current);
       }
@@ -167,7 +180,8 @@ export const ExplorerLayout = ({
         gridTemplateRows: isStacked ? 'auto auto' : '1fr',
         width: '100%',
         height: isStacked ? 'auto' : '100%',
-        minHeight: isStacked ? explorerLayoutMinHeight : 0,
+        minHeight: 0,
+        alignContent: isStacked ? 'start' : undefined,
         overflow: isStacked ? 'visible' : 'hidden',
         boxSizing: 'border-box',
         bgcolor: 'background.default',
@@ -175,11 +189,12 @@ export const ExplorerLayout = ({
     >
       <Box
         ref={slotRef}
+        data-explorer-board-slot=""
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: isStacked ? 'flex-start' : 'center',
           width: '100%',
           py: 0.5,
           px: isMobile ? 0 : 0.5,
