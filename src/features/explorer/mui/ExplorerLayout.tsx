@@ -6,7 +6,6 @@ import { panelBorderSx } from './explorerMuiStyles';
 import {
   EXPLORER_BOARD_WIDTH,
   EXPLORER_GRID_COLUMNS,
-  explorerLayoutMinHeight,
 } from './explorerLayoutConstants';
 import {
   fitExplorerBoardWidth,
@@ -14,6 +13,10 @@ import {
   fitTabletStackedExplorerBoardWidth,
   stackedExplorerSlotHeightCap,
 } from './fitExplorerBoardWidth';
+import { useStackedExplorerMainScrollPreserve } from './useStackedExplorerMainScrollPreserve';
+
+const VIEWPORT_RESIZE_DEBOUNCE_MS = 100;
+const BOARD_WIDTH_CHANGE_THRESHOLD_PX = 1;
 
 type ExplorerLayoutProps = ReferenceLayoutRenderProps & {
   onBoardWidthChange: (width: number) => void;
@@ -36,6 +39,28 @@ export const ExplorerLayout = ({
   const gridRef = useRef<HTMLDivElement>(null);
   const slotRef = useRef<HTMLDivElement>(null);
   const boardStackRef = useRef<HTMLDivElement>(null);
+  const lastBoardWidthRef = useRef<number | null>(null);
+  const mobileBoardWidthLockedRef = useRef(false);
+  const viewportResizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const captureMainScroll = useStackedExplorerMainScrollPreserve(isStacked);
+
+  const publishBoardWidth = useCallback(
+    (width: number) => {
+      const rounded = Math.round(width);
+      if (
+        lastBoardWidthRef.current !== null &&
+        Math.abs(lastBoardWidthRef.current - rounded) <=
+          BOARD_WIDTH_CHANGE_THRESHOLD_PX
+      ) {
+        return;
+      }
+      lastBoardWidthRef.current = rounded;
+      onBoardWidthChange(rounded);
+    },
+    [onBoardWidthChange],
+  );
 
   const updateBoardWidth = useCallback(() => {
     const slot = slotRef.current;
@@ -56,14 +81,18 @@ export const ExplorerLayout = ({
     const navHeight = navEl?.getBoundingClientRect().height ?? 0;
 
     if (isMobile) {
-      onBoardWidthChange(
+      if (mobileBoardWidthLockedRef.current) {
+        return;
+      }
+      publishBoardWidth(
         fitStackedExplorerBoardWidth(slotRect.width, navHeight, maxBoardWidth),
       );
+      mobileBoardWidthLockedRef.current = true;
       return;
     }
 
     if (isTabletStacked) {
-      onBoardWidthChange(
+      publishBoardWidth(
         fitTabletStackedExplorerBoardWidth(slotRect.width, navHeight),
       );
       return;
@@ -73,7 +102,7 @@ export const ExplorerLayout = ({
       ? stackedExplorerSlotHeightCap(viewportHeight)
       : slotRect.height;
 
-    onBoardWidthChange(
+    publishBoardWidth(
       fitExplorerBoardWidth(
         slotRect.width,
         slotHeightForFit,
@@ -81,7 +110,19 @@ export const ExplorerLayout = ({
         isStacked ? maxBoardWidth : slotRect.width,
       ),
     );
-  }, [isMobile, isStacked, isTabletStacked, maxBoardWidth, onBoardWidthChange]);
+  }, [
+    isMobile,
+    isStacked,
+    isTabletStacked,
+    maxBoardWidth,
+    publishBoardWidth,
+  ]);
+
+  useLayoutEffect(() => {
+    if (!isMobile) {
+      mobileBoardWidthLockedRef.current = false;
+    }
+  }, [isMobile]);
 
   useLayoutEffect(() => {
     const slot = slotRef.current;
@@ -93,34 +134,54 @@ export const ExplorerLayout = ({
 
     const observer = new ResizeObserver(updateBoardWidth);
     observer.observe(slot);
-    if (gridRef.current) {
+    if (!isStacked && gridRef.current) {
       observer.observe(gridRef.current);
     }
     if (boardStackRef.current) {
       observer.observe(boardStackRef.current);
     }
 
-    const onViewportChange = () => updateBoardWidth();
+    const onViewportChange = () => {
+      if (isMobile) {
+        mobileBoardWidthLockedRef.current = false;
+      }
+      if (viewportResizeTimerRef.current) {
+        clearTimeout(viewportResizeTimerRef.current);
+      }
+      viewportResizeTimerRef.current = setTimeout(() => {
+        viewportResizeTimerRef.current = null;
+        updateBoardWidth();
+      }, VIEWPORT_RESIZE_DEBOUNCE_MS);
+    };
     window.addEventListener('resize', onViewportChange);
-    window.visualViewport?.addEventListener('resize', onViewportChange);
+    if (!isMobile) {
+      window.visualViewport?.addEventListener('resize', onViewportChange);
+    }
 
     return () => {
       observer.disconnect();
       window.removeEventListener('resize', onViewportChange);
-      window.visualViewport?.removeEventListener('resize', onViewportChange);
+      if (!isMobile) {
+        window.visualViewport?.removeEventListener('resize', onViewportChange);
+      }
+      if (viewportResizeTimerRef.current) {
+        clearTimeout(viewportResizeTimerRef.current);
+      }
     };
-  }, [updateBoardWidth]);
+  }, [isMobile, updateBoardWidth]);
 
   return (
     <Box
       ref={gridRef}
+      onPointerDownCapture={isStacked ? captureMainScroll : undefined}
       sx={{
         display: 'grid',
         gridTemplateColumns: EXPLORER_GRID_COLUMNS,
         gridTemplateRows: isStacked ? 'auto auto' : '1fr',
         width: '100%',
         height: isStacked ? 'auto' : '100%',
-        minHeight: isStacked ? explorerLayoutMinHeight : 0,
+        minHeight: 0,
+        alignContent: isStacked ? 'start' : undefined,
         overflow: isStacked ? 'visible' : 'hidden',
         boxSizing: 'border-box',
         bgcolor: 'background.default',
@@ -128,11 +189,12 @@ export const ExplorerLayout = ({
     >
       <Box
         ref={slotRef}
+        data-explorer-board-slot=""
         sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: isStacked ? 'flex-start' : 'center',
           width: '100%',
           py: 0.5,
           px: isMobile ? 0 : 0.5,
@@ -150,6 +212,7 @@ export const ExplorerLayout = ({
             width: 'fit-content',
             maxWidth: '100%',
             mx: 'auto',
+            ...(isMobile && isStacked ? { touchAction: 'none' } : {}),
           }}
         >
           {board}
