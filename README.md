@@ -17,9 +17,9 @@ Used in production at [endchess.com](https://endchess.com).
 
 ```bash
 # Build core first
-cd ../react-chess-core && npm run build
+cd ../react-chess-core-2 && npm run build
 
-cd ../react-chess-explorer
+cd ../react-chess-explorer-2
 npm install
 npm run build
 ```
