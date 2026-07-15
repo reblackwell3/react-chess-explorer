@@ -11,14 +11,14 @@ export type ExplorerPanelRowLimits = {
   games: number;
 };
 
-/** Laptop / standard desktop (1366–1919px): compact moves + lines, games scroll below. */
+/** Laptop / standard desktop (1194–1919px): compact moves + lines, games scroll below. */
 const LAPTOP_LIMITS: ExplorerPanelRowLimits = {
   moves: 5,
   variations: 4,
   games: 50,
 };
 
-/** 1366–2559 CSS px (typical laptops incl. 13" at 1920 logical width). */
+/** 1194–2559 CSS px (iPad Pro 11" landscape through typical laptops). */
 export const EXPLORER_PANEL_ROW_LIMITS: Record<
   ViewportBand | 'ultraWide',
   ExplorerPanelRowLimits
