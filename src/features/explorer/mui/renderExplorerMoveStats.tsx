@@ -6,8 +6,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import { whiteScorePercent } from '../positionUtils';
 import type { MoveStatsRenderProps } from '../core/renderProps';
@@ -23,14 +21,14 @@ import {
   panelBorderSx,
   stackedExplorerMoveStatsScrollSx,
 } from './explorerMuiStyles';
+import { useLandscapeLayout } from './useLandscapeLayout';
 
 export const ExplorerMoveStats = ({
   moves,
   selectedUci,
   onMoveSelect,
 }: MoveStatsRenderProps) => {
-  const theme = useTheme();
-  const isStacked = useMediaQuery(theme.breakpoints.down('lg'));
+  const isStacked = !useLandscapeLayout();
 
   return (
     <Box

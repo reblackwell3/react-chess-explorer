@@ -5,7 +5,6 @@ import { responsiveMaxBoardWidth } from './boardLayoutConstants';
 import { panelBorderSx } from './explorerMuiStyles';
 import {
   EXPLORER_BOARD_WIDTH,
-  EXPLORER_GRID_COLUMNS,
 } from './explorerLayoutConstants';
 import {
   fitExplorerBoardWidth,
@@ -13,6 +12,7 @@ import {
   fitTabletStackedExplorerBoardWidth,
   stackedExplorerSlotHeightCap,
 } from './fitExplorerBoardWidth';
+import { useLandscapeLayout } from './useLandscapeLayout';
 import { useStackedExplorerMainScrollPreserve } from './useStackedExplorerMainScrollPreserve';
 
 const VIEWPORT_RESIZE_DEBOUNCE_MS = 100;
@@ -29,7 +29,7 @@ export const ExplorerLayout = ({
 }: ExplorerLayoutProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isStacked = useMediaQuery(theme.breakpoints.down('lg'));
+  const isStacked = !useLandscapeLayout();
   const isTabletStacked = isStacked && !isMobile;
   const maxBoardWidth = responsiveMaxBoardWidth(
     EXPLORER_BOARD_WIDTH,
@@ -176,7 +176,9 @@ export const ExplorerLayout = ({
       onPointerDownCapture={isStacked ? captureMainScroll : undefined}
       sx={{
         display: 'grid',
-        gridTemplateColumns: EXPLORER_GRID_COLUMNS,
+        gridTemplateColumns: isStacked
+          ? '1fr'
+          : 'minmax(0, 1fr) minmax(0, 1fr)',
         gridTemplateRows: isStacked ? 'auto auto' : '1fr',
         width: '100%',
         height: isStacked ? 'auto' : '100%',
@@ -225,8 +227,8 @@ export const ExplorerLayout = ({
           height: isStacked ? 'auto' : '100%',
           minHeight: isStacked ? 'auto' : 0,
           overflow: isStacked ? 'visible' : 'hidden',
-          borderLeft: { xs: 0, lg: 1 },
-          borderTop: { xs: 1, lg: 0 },
+          borderLeft: isStacked ? 0 : 1,
+          borderTop: isStacked ? 1 : 0,
           ...panelBorderSx,
         }}
       >

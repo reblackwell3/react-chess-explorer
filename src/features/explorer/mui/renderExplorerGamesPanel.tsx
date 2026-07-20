@@ -9,8 +9,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  useMediaQuery,
-  useTheme,
 } from '@mui/material';
 import type { GamesPanelRenderProps } from '../core/renderProps';
 import type { PositionGameRowApiDto } from '../types';
@@ -25,6 +23,7 @@ import {
   panelBorderSx,
   sectionHeaderSx,
 } from './explorerMuiStyles';
+import { useLandscapeLayout } from './useLandscapeLayout';
 
 export type ExplorerGamesPanelHostProps = {
   /** Wrap each game row (e.g. hover preview). Defaults to identity. */
@@ -248,8 +247,7 @@ export const ExplorerGamesPanel = (props: ExplorerGamesPanelRenderProps) => {
     LinkComponent = 'a',
   } = props;
   const host = resolveHost(props);
-  const theme = useTheme();
-  const isStacked = useMediaQuery(theme.breakpoints.down('lg'));
+  const isStacked = !useLandscapeLayout();
   const wrappedRows = wrappedRowsProp ?? true;
   const viewedGameIds = host.useViewedGameIds(games);
   const isGameViewed = (gameId: string) => viewedGameIds.has(gameId);
