@@ -1,4 +1,4 @@
-import { Box, ButtonBase, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Box, ButtonBase, Typography } from '@mui/material';
 import { isVariationLineActive } from '../variationLines';
 import type { VariationsStripRenderProps } from '../core/renderProps';
 import {
@@ -20,6 +20,7 @@ import {
   explorerVariationsStripSx,
   stackedExplorerVariationsScrollSx,
 } from './explorerMuiStyles';
+import { useLandscapeLayout } from './useLandscapeLayout';
 
 const EXPLORER_VARIATION_COLUMN_LABELS = [
   'Games',
@@ -95,8 +96,7 @@ export const ExplorerVariationsStrip = ({
   forwardSans,
   onLineSelect,
 }: VariationsStripRenderProps) => {
-  const muiTheme = useTheme();
-  const isStacked = useMediaQuery(muiTheme.breakpoints.down('lg'));
+  const isStacked = !useLandscapeLayout();
 
   const showColumnHeader = loading || lines.length > 0;
 
