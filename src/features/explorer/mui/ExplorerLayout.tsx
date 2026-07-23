@@ -13,7 +13,6 @@ import {
   stackedExplorerSlotHeightCap,
 } from './fitExplorerBoardWidth';
 import { useLandscapeLayout } from './useLandscapeLayout';
-import { useStackedExplorerMainScrollPreserve } from './useStackedExplorerMainScrollPreserve';
 
 const VIEWPORT_RESIZE_DEBOUNCE_MS = 100;
 const BOARD_WIDTH_CHANGE_THRESHOLD_PX = 1;
@@ -44,7 +43,6 @@ export const ExplorerLayout = ({
   const viewportResizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
-  const captureMainScroll = useStackedExplorerMainScrollPreserve(isStacked);
 
   const publishBoardWidth = useCallback(
     (width: number) => {
@@ -173,18 +171,16 @@ export const ExplorerLayout = ({
   return (
     <Box
       ref={gridRef}
-      onPointerDownCapture={isStacked ? captureMainScroll : undefined}
       sx={{
         display: 'grid',
         gridTemplateColumns: isStacked
           ? '1fr'
           : 'minmax(0, 1fr) minmax(0, 1fr)',
-        gridTemplateRows: isStacked ? 'auto auto' : '1fr',
+        gridTemplateRows: isStacked ? 'auto minmax(0, 1fr)' : '1fr',
         width: '100%',
-        height: isStacked ? 'auto' : '100%',
+        height: '100%',
         minHeight: 0,
-        alignContent: isStacked ? 'start' : undefined,
-        overflow: isStacked ? 'visible' : 'hidden',
+        overflow: 'hidden',
         boxSizing: 'border-box',
         bgcolor: 'background.default',
       }}
@@ -224,9 +220,9 @@ export const ExplorerLayout = ({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          height: isStacked ? 'auto' : '100%',
-          minHeight: isStacked ? 'auto' : 0,
-          overflow: isStacked ? 'visible' : 'hidden',
+          height: '100%',
+          minHeight: 0,
+          overflow: 'hidden',
           borderLeft: isStacked ? 0 : 1,
           borderTop: isStacked ? 1 : 0,
           ...panelBorderSx,
